@@ -21,21 +21,33 @@ import (
 )
 
 // EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
+
+const (
+	StateReady      string = "Ready"
+	StateError      string = "Error"
+	StateProcessing string = "Processing"
+	StateWarning    string = "Warning"
+)
+
 // NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
 
 // CompanionSpec defines the desired state of Companion
 type CompanionSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
-
-	// Foo is an example field of Companion. Edit companion_types.go to remove/update
-	Foo string `json:"foo,omitempty"`
 }
 
 // CompanionStatus defines the observed state of Companion
 type CompanionStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
+
+	// Defines the overall state of the Companion custom resource.<br/>
+	// - `Ready` when all the resources managed by the Kyma companion manager are deployed successfully and the companion backend is ready.<br/>
+	// - `Warning` if there is a user input misconfiguration.<br/>
+	// - `Processing` if the resources managed by the Kyma companion manager are being created or updated.<br/>
+	// - `Error` if an error occurred while reconciling the Companion custom resource.
+	State string `json:"state"`
 }
 
 // +kubebuilder:object:root=true
