@@ -18,9 +18,14 @@ package utils
 
 import (
 	"fmt"
+	"math/rand"
 	"os"
 	"os/exec"
 	"strings"
+	"time"
+
+	kcmv1alpha1 "github.com/kyma-project/kyma-companion-manager/api/v1alpha1"
+	kmetav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	. "github.com/onsi/ginkgo/v2" //nolint:golint,revive
 )
@@ -32,6 +37,16 @@ const (
 
 	certmanagerVersion = "v1.14.4"
 	certmanagerURLTmpl = "https://github.com/jetstack/cert-manager/releases/download/%s/cert-manager.yaml"
+
+	randomNameLen = 5
+	charset       = "abcdefghijklmnopqrstuvwxyz0123456789"
+
+	NameFormat      = "name-%s"
+	NamespaceFormat = "namespace-%s"
+)
+
+var (
+	seededRand = rand.New(rand.NewSource(time.Now().UnixNano())) //nolint:gosec,gochecknoglobals // used in tests
 )
 
 func warnError(err error) {
@@ -137,4 +152,46 @@ func GetProjectDir() (string, error) {
 	}
 	wd = strings.Replace(wd, "/test/e2e", "", -1)
 	return wd, nil
+}
+
+func GetRandString(length int) string {
+	b := make([]byte, length)
+	for i := range b {
+		b[i] = charset[seededRand.Intn(len(charset))]
+	}
+	return string(b)
+}
+
+func GetRandomName() string {
+	return fmt.Sprintf(NameFormat, GetRandString(randomNameLen))
+}
+
+func GetRandomNamespaceName() string {
+	return fmt.Sprintf(NamespaceFormat, GetRandString(randomNameLen))
+}
+
+func NewCompanionCR(opts ...CompanionOption) *kcmv1alpha1.Companion {
+	name := GetRandomName()
+	namespace := GetRandomNamespaceName()
+
+	eventing := &kcmv1alpha1.Companion{
+		TypeMeta: kmetav1.TypeMeta{
+			Kind:       "Companion",
+			APIVersion: "operator.kyma-project.io/v1alpha1",
+		},
+		ObjectMeta: kmetav1.ObjectMeta{
+			Name:      name,
+			Namespace: namespace,
+			UID:       "1234-5678-1234-5678",
+		},
+		Spec: kcmv1alpha1.CompanionSpec{},
+	}
+
+	for _, opt := range opts {
+		if err := opt(eventing); err != nil {
+			panic(err)
+		}
+	}
+
+	return eventing
 }

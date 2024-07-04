@@ -123,7 +123,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	if err = (&controller.CompanionReconciler{
+	if err = (&controller.Reconciler{
 		Client: mgr.GetClient(),
 		Scheme: mgr.GetScheme(),
 	}).SetupWithManager(mgr); err != nil {

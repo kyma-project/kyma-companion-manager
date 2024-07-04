@@ -15,11 +15,17 @@ endif
 # scaffolded by default. However, you might want to replace it to use other
 # tools. (i.e. podman)
 CONTAINER_TOOL ?= docker
-
 # Setting SHELL to bash allows bash commands to be executed by recipes.
 # Options are set to exit when a recipe line exits non-zero or a piped command fails.
 SHELL = /usr/bin/env bash -o pipefail
 .SHELLFLAGS = -ec
+
+# VERIFY_IGNORE is a grep pattern to exclude files and directories from verification
+VERIFY_IGNORE := /vendor\|/automock
+# FILES_TO_CHECK is a command used to determine which files should be verified
+FILES_TO_CHECK = find . -type f -name "*.go" | grep -v "$(VERIFY_IGNORE)"
+# DIRS_TO_CHECK is a command used to determine which directories should be verified
+DIRS_TO_CHECK = go list ./... | grep -v "$(VERIFY_IGNORE)"
 
 .PHONY: all
 all: build
@@ -48,16 +54,27 @@ manifests: controller-gen ## Generate WebhookConfiguration, ClusterRole and Cust
 	$(CONTROLLER_GEN) rbac:roleName=manager-role crd webhook paths="./..." output:crd:artifacts:config=config/crd/bases
 
 .PHONY: generate
-generate: controller-gen ## Generate code containing DeepCopy, DeepCopyInto, and DeepCopyObject method implementations.
+generate: go-gen controller-gen ## Generate code containing DeepCopy, DeepCopyInto, and DeepCopyObject method implementations.
 	$(CONTROLLER_GEN) object:headerFile="hack/boilerplate.go.txt" paths="./..."
 
 .PHONY: fmt
-fmt: ## Run go fmt against code.
-	go fmt ./...
+fmt: ## Reformat files using `go fmt`
+	go fmt $$($(DIRS_TO_CHECK))
+
+.PHONY: imports
+imports: ## Optimize imports
+	goimports -w -l $$($(FILES_TO_CHECK))
+
+.PHONY: vendor
+vendor:
+	go mod vendor
 
 .PHONY: vet
 vet: ## Run go vet against code.
 	go vet ./...
+
+.PHONY: generate-and-test
+generate-and-test: vendor manifests generate fmt imports vet lint test;
 
 .PHONY: test
 test: manifests generate fmt vet envtest ## Run tests.
@@ -68,6 +85,11 @@ test: manifests generate fmt vet envtest ## Run tests.
 test-e2e:
 	go test ./test/e2e/ -v -ginkgo.v
 
+# clean-testcache cleans the go test cache.
+.PHONY: clean-testcache
+clean-testcache:
+	go clean -testcache
+
 .PHONY: lint
 lint: golangci-lint ## Run golangci-lint linter
 	$(GOLANGCI_LINT) run
@@ -75,6 +97,9 @@ lint: golangci-lint ## Run golangci-lint linter
 .PHONY: lint-fix
 lint-fix: golangci-lint ## Run golangci-lint linter and perform fixes
 	$(GOLANGCI_LINT) run --fix
+
+go-gen:
+	go generate ./...
 
 ##@ Build
 
@@ -142,6 +167,11 @@ deploy: manifests kustomize ## Deploy controller to the K8s cluster specified in
 .PHONY: undeploy
 undeploy: kustomize ## Undeploy controller from the K8s cluster specified in ~/.kube/config. Call with ignore-not-found=true to ignore resource not found errors during deletion.
 	$(KUSTOMIZE) build config/default | $(KUBECTL) delete --ignore-not-found=$(ignore-not-found) -f -
+
+.PHONY: render-manifest
+render-manifest: manifests kustomize
+	cd config/manager && $(KUSTOMIZE) edit set image controller=${IMG}
+	$(KUSTOMIZE) build config/default > kyma-companion-manager.yaml
 
 ##@ Dependencies
 
