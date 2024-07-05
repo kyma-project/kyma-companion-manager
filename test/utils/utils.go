@@ -26,11 +26,11 @@ import (
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-
-	kcmv1alpha1 "github.com/kyma-project/kyma-companion-manager/api/v1alpha1"
 	kmetav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	. "github.com/onsi/ginkgo/v2" //nolint:golint,revive
+	kcmv1alpha1 "github.com/kyma-project/kyma-companion-manager/api/v1alpha1"
+
+	. "github.com/onsi/ginkgo/v2"
 )
 
 const (
@@ -48,9 +48,7 @@ const (
 	NamespaceFormat = "namespace-%s"
 )
 
-var (
-	seededRand = rand.New(rand.NewSource(time.Now().UnixNano())) //nolint:gosec,gochecknoglobals // used in tests
-)
+var seededRand = rand.New(rand.NewSource(time.Now().UnixNano())) //nolint:gosec,gochecknoglobals // used in tests
 
 func warnError(err error) {
 	fmt.Fprintf(GinkgoWriter, "warning: %v\n", err)
@@ -64,7 +62,7 @@ func InstallPrometheusOperator() error {
 	return err
 }
 
-// Run executes the provided command within this context
+// Run executes the provided command within this context.
 func Run(cmd *exec.Cmd) ([]byte, error) {
 	dir, _ := GetProjectDir()
 	cmd.Dir = dir
@@ -78,13 +76,14 @@ func Run(cmd *exec.Cmd) ([]byte, error) {
 	fmt.Fprintf(GinkgoWriter, "running: %s\n", command)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
+		//nolint:errorlint,goerr113 // used for testing purposes.
 		return output, fmt.Errorf("%s failed with error: (%v) %s", command, err, string(output))
 	}
 
 	return output, nil
 }
 
-// UninstallPrometheusOperator uninstalls the prometheus
+// UninstallPrometheusOperator uninstalls the prometheus.
 func UninstallPrometheusOperator() {
 	url := fmt.Sprintf(prometheusOperatorURL, prometheusOperatorVersion)
 	cmd := exec.Command("kubectl", "delete", "-f", url)
@@ -93,7 +92,7 @@ func UninstallPrometheusOperator() {
 	}
 }
 
-// UninstallCertManager uninstalls the cert manager
+// UninstallCertManager uninstalls the cert manager.
 func UninstallCertManager() {
 	url := fmt.Sprintf(certmanagerURLTmpl, certmanagerVersion)
 	cmd := exec.Command("kubectl", "delete", "-f", url)
@@ -121,7 +120,7 @@ func InstallCertManager() error {
 	return err
 }
 
-// LoadImageToKindCluster loads a local docker image to the kind cluster
+// LoadImageToKindClusterWithName loads a local docker image to the kind cluster.
 func LoadImageToKindClusterWithName(name string) error {
 	cluster := "kind"
 	if v, ok := os.LookupEnv("KIND_CLUSTER"); ok {
@@ -147,14 +146,15 @@ func GetNonEmptyLines(output string) []string {
 	return res
 }
 
-// GetProjectDir will return the directory where the project is
+// GetProjectDir will return the directory where the project is.
 func GetProjectDir() (string, error) {
-	wd, err := os.Getwd()
+	wdir, err := os.Getwd()
 	if err != nil {
-		return wd, err
+		return wdir, err
 	}
-	wd = strings.Replace(wd, "/test/e2e", "", -1)
-	return wd, nil
+	//nolint:gocritic // we need to remove the last part of the path.
+	wdir = strings.Replace(wdir, "/test/e2e", "", -1)
+	return wdir, nil
 }
 
 func NewLogger() (*zap.Logger, error) {

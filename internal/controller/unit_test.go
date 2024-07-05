@@ -4,19 +4,18 @@ import (
 	"context"
 	"testing"
 
-	testutils "github.com/kyma-project/kyma-companion-manager/test/utils"
-	"go.uber.org/zap"
-
-	"k8s.io/apimachinery/pkg/types"
-
-	kcmv1alpha1 "github.com/kyma-project/kyma-companion-manager/api/v1alpha1"
 	"github.com/stretchr/testify/require"
+	"go.uber.org/zap"
 	kadmissionregistrationv1 "k8s.io/api/admissionregistration/v1"
 	kcorev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/tools/record"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/client/fake"
+
+	kcmv1alpha1 "github.com/kyma-project/kyma-companion-manager/api/v1alpha1"
+	testutils "github.com/kyma-project/kyma-companion-manager/test/utils"
 )
 
 // MockedUnitTestEnvironment provides mocked resources for unit tests.

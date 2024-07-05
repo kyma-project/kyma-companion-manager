@@ -19,11 +19,12 @@ package controller
 import (
 	"context"
 
-	kcmv1alpha1 "github.com/kyma-project/kyma-companion-manager/api/v1alpha1"
 	"go.uber.org/zap"
 	"k8s.io/apimachinery/pkg/runtime"
 	kctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+
+	kcmv1alpha1 "github.com/kyma-project/kyma-companion-manager/api/v1alpha1"
 )
 
 const (
@@ -31,7 +32,7 @@ const (
 	ControllerName = "kyma-companion-manager-controller"
 )
 
-// Reconciler reconciles a Companion object
+// Reconciler reconciles a Companion object.
 type Reconciler struct {
 	client.Client
 	Scheme *runtime.Scheme
@@ -50,16 +51,14 @@ func NewReconciler(
 	}
 }
 
+// RBAC permissions.
+//nolint:lll // ignore long line length due to kubebuilder markers.
 // +kubebuilder:rbac:groups=operator.kyma-project.io,resources=companions,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=operator.kyma-project.io,resources=companions/status,verbs=get;update;patch
 // +kubebuilder:rbac:groups=operator.kyma-project.io,resources=companions/finalizers,verbs=update
 
 // Reconcile is part of the main kubernetes reconciliation loop which aims to
 // move the current state of the cluster closer to the desired state.
-// TODO(user): Modify the Reconcile function to compare the state specified by
-// the Companion object against the actual cluster state, and then
-// perform operations to make the cluster state reflect the state specified by
-// the user.
 //
 // For more details, check Reconcile and its Result here:
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.18.2/pkg/reconcile

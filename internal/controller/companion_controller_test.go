@@ -19,16 +19,16 @@ package controller
 import (
 	"context"
 
-	. "github.com/onsi/ginkgo/v2"
-	. "github.com/onsi/gomega"
 	"k8s.io/apimachinery/pkg/api/errors"
+	kmetav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-
-	operatorv1alpha1 "github.com/kyma-project/kyma-companion-manager/api/v1alpha1"
+	kcmv1alpha1 "github.com/kyma-project/kyma-companion-manager/api/v1alpha1"
 	testutils "github.com/kyma-project/kyma-companion-manager/test/utils"
+
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Companion Controller", func() {
@@ -39,28 +39,27 @@ var _ = Describe("Companion Controller", func() {
 
 		typeNamespacedName := types.NamespacedName{
 			Name:      resourceName,
-			Namespace: "default", // TODO(user):Modify as needed
+			Namespace: "default",
 		}
-		companion := &operatorv1alpha1.Companion{}
+		companion := &kcmv1alpha1.Companion{}
 
 		BeforeEach(func() {
 			By("creating the custom resource for the Kind Companion")
 			err := k8sClient.Get(ctx, typeNamespacedName, companion)
 			if err != nil && errors.IsNotFound(err) {
-				resource := &operatorv1alpha1.Companion{
-					ObjectMeta: metav1.ObjectMeta{
+				resource := &kcmv1alpha1.Companion{
+					ObjectMeta: kmetav1.ObjectMeta{
 						Name:      resourceName,
 						Namespace: "default",
 					},
-					// TODO(user): Specify other spec details if needed.
 				}
 				Expect(k8sClient.Create(ctx, resource)).To(Succeed())
 			}
 		})
 
 		AfterEach(func() {
-			// TODO(user): Cleanup logic after each test, like removing the resource instance.
-			resource := &operatorv1alpha1.Companion{}
+			// cleanup logic after each test, like removing the resource instance.
+			resource := &kcmv1alpha1.Companion{}
 			err := k8sClient.Get(ctx, typeNamespacedName, resource)
 			Expect(err).NotTo(HaveOccurred())
 
@@ -82,7 +81,7 @@ var _ = Describe("Companion Controller", func() {
 				NamespacedName: typeNamespacedName,
 			})
 			Expect(err).NotTo(HaveOccurred())
-			// TODO(user): Add more specific assertions depending on your controller's reconciliation logic.
+			// Add more specific assertions depending on your controller's reconciliation logic.
 			// Example: If you expect a certain status condition after reconciliation, verify it here.
 		})
 	})
