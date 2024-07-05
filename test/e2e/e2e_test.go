@@ -21,10 +21,10 @@ import (
 	"os/exec"
 	"time"
 
+	"github.com/kyma-project/kyma-companion-manager/test/utils"
+
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-
-	"github.com/kyma-project/kyma-companion-manager/test/utils"
 )
 
 const namespace = "kyma-companion-manager-system"
@@ -60,14 +60,15 @@ var _ = Describe("controller", Ordered, func() {
 			var err error
 
 			// projectimage stores the name of the image used in the example
-			var projectimage = "example.com/kyma-companion-manager:v0.0.1"
+			projectimage := "example.com/kyma-companion-manager:v0.0.1"
 
 			By("building the manager(Operator) image")
+			//nolint:gosec // only for test purpose.
 			cmd := exec.Command("make", "docker-build", fmt.Sprintf("IMG=%s", projectimage))
 			_, err = utils.Run(cmd)
 			ExpectWithOffset(1, err).NotTo(HaveOccurred())
 
-			By("loading the the manager(Operator) image on Kind")
+			By("loading the manager(Operator) image on Kind")
 			err = utils.LoadImageToKindClusterWithName(projectimage)
 			ExpectWithOffset(1, err).NotTo(HaveOccurred())
 
@@ -77,6 +78,7 @@ var _ = Describe("controller", Ordered, func() {
 			ExpectWithOffset(1, err).NotTo(HaveOccurred())
 
 			By("deploying the controller-manager")
+			//nolint:gosec // only for test purpose.
 			cmd = exec.Command("make", "deploy", fmt.Sprintf("IMG=%s", projectimage))
 			_, err = utils.Run(cmd)
 			ExpectWithOffset(1, err).NotTo(HaveOccurred())
@@ -98,6 +100,7 @@ var _ = Describe("controller", Ordered, func() {
 				ExpectWithOffset(2, err).NotTo(HaveOccurred())
 				podNames := utils.GetNonEmptyLines(string(podOutput))
 				if len(podNames) != 1 {
+					//nolint:goerr113 // dummy test purpose.
 					return fmt.Errorf("expect 1 controller pods running, but got %d", len(podNames))
 				}
 				controllerPodName = podNames[0]
@@ -111,12 +114,12 @@ var _ = Describe("controller", Ordered, func() {
 				status, err := utils.Run(cmd)
 				ExpectWithOffset(2, err).NotTo(HaveOccurred())
 				if string(status) != "Running" {
+					//nolint:goerr113 // dummy test purpose.
 					return fmt.Errorf("controller pod in %s status", status)
 				}
 				return nil
 			}
 			EventuallyWithOffset(1, verifyControllerUp, time.Minute, time.Second).Should(Succeed())
-
 		})
 	})
 })

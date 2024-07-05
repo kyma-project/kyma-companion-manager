@@ -1,8 +1,9 @@
 package utils
 
 import (
-	kcmv1alpha1 "github.com/kyma-project/kyma-companion-manager/api/v1alpha1"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
+
+	kcmv1alpha1 "github.com/kyma-project/kyma-companion-manager/api/v1alpha1"
 )
 
 type CompanionOption func(*kcmv1alpha1.Companion) error

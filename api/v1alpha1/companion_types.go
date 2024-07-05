@@ -17,7 +17,7 @@ limitations under the License.
 package v1alpha1
 
 import (
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	kmetav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 // EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
@@ -31,19 +31,20 @@ const (
 
 // NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
 
-// CompanionSpec defines the desired state of Companion
+// CompanionSpec defines the desired state of Companion.
 type CompanionSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 }
 
-// CompanionStatus defines the observed state of Companion
+// CompanionStatus defines the observed state of Companion.
 type CompanionStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 
 	// Defines the overall state of the Companion custom resource.<br/>
-	// - `Ready` when all the resources managed by the Kyma companion manager are deployed successfully and the companion backend is ready.<br/>
+	// - `Ready` when all the resources managed by the Kyma companion manager are deployed successfully and
+	// the companion backend is ready.<br/>
 	// - `Warning` if there is a user input misconfiguration.<br/>
 	// - `Processing` if the resources managed by the Kyma companion manager are being created or updated.<br/>
 	// - `Error` if an error occurred while reconciling the Companion custom resource.
@@ -53,10 +54,10 @@ type CompanionStatus struct {
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
 
-// Companion is the Schema for the companions API
+// Companion is the Schema for the companions API.
 type Companion struct {
-	metav1.TypeMeta   `json:",inline"`
-	metav1.ObjectMeta `json:"metadata,omitempty"`
+	kmetav1.TypeMeta   `json:",inline"`
+	kmetav1.ObjectMeta `json:"metadata,omitempty"`
 
 	Spec   CompanionSpec   `json:"spec,omitempty"`
 	Status CompanionStatus `json:"status,omitempty"`
@@ -64,13 +65,14 @@ type Companion struct {
 
 // +kubebuilder:object:root=true
 
-// CompanionList contains a list of Companion
+// CompanionList contains a list of Companion.
 type CompanionList struct {
-	metav1.TypeMeta `json:",inline"`
-	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []Companion `json:"items"`
+	kmetav1.TypeMeta `json:",inline"`
+	kmetav1.ListMeta `json:"metadata,omitempty"`
+	Items            []Companion `json:"items"`
 }
 
+//nolint:gochecknoinits // scaffolded by kubebuilder.
 func init() {
 	SchemeBuilder.Register(&Companion{}, &CompanionList{})
 }

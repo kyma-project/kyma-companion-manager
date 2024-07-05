@@ -17,7 +17,7 @@ spec:
   - name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: Companion is the Schema for the companions API
+        description: Companion is the Schema for the companions API.
         properties:
           apiVersion:
             description: |-
@@ -37,15 +37,16 @@ spec:
           metadata:
             type: object
           spec:
-            description: CompanionSpec defines the desired state of Companion
+            description: CompanionSpec defines the desired state of Companion.
             type: object
           status:
-            description: CompanionStatus defines the observed state of Companion
+            description: CompanionStatus defines the observed state of Companion.
             properties:
               state:
                 description: |-
                   Defines the overall state of the Companion custom resource.<br/>
-                  - `Ready` when all the resources managed by the Kyma companion manager are deployed successfully and the companion backend is ready.<br/>
+                  - `Ready` when all the resources managed by the Kyma companion manager are deployed successfully and
+                  the companion backend is ready.<br/>
                   - `Warning` if there is a user input misconfiguration.<br/>
                   - `Processing` if the resources managed by the Kyma companion manager are being created or updated.<br/>
                   - `Error` if an error occurred while reconciling the Companion custom resource.

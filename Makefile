@@ -74,7 +74,7 @@ vet: ## Run go vet against code.
 	go vet ./...
 
 .PHONY: generate-and-test
-generate-and-test: vendor manifests generate fmt imports vet lint test;
+generate-and-test: vendor manifests generate fmt imports vet lint-fix test;
 
 .PHONY: test
 test: manifests generate fmt vet envtest ## Run tests.

@@ -23,38 +23,37 @@ import (
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+	"k8s.io/apimachinery/pkg/runtime"
+	kutilruntime "k8s.io/apimachinery/pkg/util/runtime"
+	kkubernetesscheme "k8s.io/client-go/kubernetes/scheme"
+	kctrl "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/healthz"
+	kctrllogzap "sigs.k8s.io/controller-runtime/pkg/log/zap"
+	kctrlmetricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
+	"sigs.k8s.io/controller-runtime/pkg/webhook"
+
+	kcmv1alpha1 "github.com/kyma-project/kyma-companion-manager/api/v1alpha1"
+	"github.com/kyma-project/kyma-companion-manager/internal/controller"
 
 	// Import all Kubernetes client auth plugins (e.g. Azure, GCP, OIDC, etc.)
 	// to ensure that exec-entrypoint and run can make use of them.
 	_ "k8s.io/client-go/plugin/pkg/client/auth"
-
-	"k8s.io/apimachinery/pkg/runtime"
-	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
-	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
-	ctrl "sigs.k8s.io/controller-runtime"
-	"sigs.k8s.io/controller-runtime/pkg/healthz"
-	klogzap "sigs.k8s.io/controller-runtime/pkg/log/zap"
-	metricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
-	"sigs.k8s.io/controller-runtime/pkg/webhook"
-
-	operatorv1alpha1 "github.com/kyma-project/kyma-companion-manager/api/v1alpha1"
-	"github.com/kyma-project/kyma-companion-manager/internal/controller"
-	// +kubebuilder:scaffold:imports
 )
 
+//nolint:gochecknoglobals // scaffolded by kubebuilder.
 var (
 	scheme   = runtime.NewScheme()
-	setupLog = ctrl.Log.WithName("setup")
+	setupLog = kctrl.Log.WithName("setup")
 )
 
-func init() {
-	utilruntime.Must(clientgoscheme.AddToScheme(scheme))
+func init() { //nolint:gochecknoinits // main function needs to initialize schemes.
+	kutilruntime.Must(kkubernetesscheme.AddToScheme(scheme))
 
-	utilruntime.Must(operatorv1alpha1.AddToScheme(scheme))
+	kutilruntime.Must(kcmv1alpha1.AddToScheme(scheme))
 	// +kubebuilder:scaffold:scheme
 }
 
-func main() {
+func main() { //nolint:funlen // main function needs to initialize many object.
 	var metricsAddr string
 	var enableLeaderElection bool
 	var probeAddr string
@@ -72,7 +71,7 @@ func main() {
 		"If set, HTTP/2 will be enabled for the metrics and webhook servers")
 
 	logLevel := zapcore.DebugLevel
-	opts := klogzap.Options{
+	opts := kctrllogzap.Options{
 		Development: true,
 		Level:       logLevel,
 	}
@@ -80,7 +79,7 @@ func main() {
 	flag.Parse()
 
 	// setup logger
-	ctrl.SetLogger(klogzap.New(klogzap.UseFlagOptions(&opts)))
+	kctrl.SetLogger(kctrllogzap.New(kctrllogzap.UseFlagOptions(&opts)))
 	loggerConfig := zap.NewProductionConfig()
 	loggerConfig.EncoderConfig.TimeKey = "timestamp"
 	loggerConfig.Encoding = "json"
@@ -114,9 +113,9 @@ func main() {
 		TLSOpts: tlsOpts,
 	})
 
-	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
+	mgr, err := kctrl.NewManager(kctrl.GetConfigOrDie(), kctrl.Options{
 		Scheme: scheme,
-		Metrics: metricsserver.Options{
+		Metrics: kctrlmetricsserver.Options{
 			BindAddress:   metricsAddr,
 			SecureServing: secureMetrics,
 			TLSOpts:       tlsOpts,
@@ -164,7 +163,7 @@ func main() {
 	}
 
 	setupLog.Info("starting manager")
-	if err := mgr.Start(ctrl.SetupSignalHandler()); err != nil {
+	if err := mgr.Start(kctrl.SetupSignalHandler()); err != nil {
 		setupLog.Error(err, "problem running manager")
 		os.Exit(1)
 	}
