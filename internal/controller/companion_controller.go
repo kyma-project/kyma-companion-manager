@@ -19,12 +19,11 @@ package controller
 import (
 	"context"
 
-	"github.com/go-logr/logr"
 	kcmv1alpha1 "github.com/kyma-project/kyma-companion-manager/api/v1alpha1"
+	"go.uber.org/zap"
 	"k8s.io/apimachinery/pkg/runtime"
 	kctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	"sigs.k8s.io/controller-runtime/pkg/log"
 )
 
 const (
@@ -36,6 +35,19 @@ const (
 type Reconciler struct {
 	client.Client
 	Scheme *runtime.Scheme
+	logger *zap.SugaredLogger
+}
+
+func NewReconciler(
+	client client.Client,
+	scheme *runtime.Scheme,
+	logger *zap.SugaredLogger,
+) *Reconciler {
+	return &Reconciler{
+		Client: client,
+		Scheme: scheme,
+		logger: logger,
+	}
 }
 
 // +kubebuilder:rbac:groups=operator.kyma-project.io,resources=companions,verbs=get;list;watch;create;update;patch;delete
@@ -52,7 +64,7 @@ type Reconciler struct {
 // For more details, check Reconcile and its Result here:
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.18.2/pkg/reconcile
 func (r *Reconciler) Reconcile(ctx context.Context, req kctrl.Request) (kctrl.Result, error) {
-	logger := log.FromContext(ctx)
+	r.logger.Info("Reconciliation triggered")
 
 	// fetch latest CR.
 	currentCompanion := &kcmv1alpha1.Companion{}
@@ -63,17 +75,20 @@ func (r *Reconciler) Reconcile(ctx context.Context, req kctrl.Request) (kctrl.Re
 	// copy the object, so we don't modify the source object.
 	companionCR := currentCompanion.DeepCopy()
 
+	// Create a logger with NATS details.
+	log := r.loggerWithCompanion(companionCR)
+
 	// check if companion CR is in deletion state.
 	if !companionCR.DeletionTimestamp.IsZero() {
-		return r.handleCompanionDeletion(ctx, companionCR, logger)
+		return r.handleCompanionDeletion(ctx, companionCR, log)
 	}
 
 	// handle reconciliation.
-	return r.handleCompanionReconcile(ctx, companionCR, logger)
+	return r.handleCompanionReconcile(ctx, companionCR, log)
 }
 
 func (r *Reconciler) handleCompanionReconcile(ctx context.Context,
-	companion *kcmv1alpha1.Companion, log logr.Logger,
+	companion *kcmv1alpha1.Companion, log *zap.SugaredLogger,
 ) (kctrl.Result, error) {
 	log.Info("handling Companion reconciliation...")
 
@@ -87,7 +102,7 @@ func (r *Reconciler) handleCompanionReconcile(ctx context.Context,
 }
 
 func (r *Reconciler) handleCompanionDeletion(ctx context.Context, companion *kcmv1alpha1.Companion,
-	log logr.Logger,
+	log *zap.SugaredLogger,
 ) (kctrl.Result, error) {
 	// skip reconciliation for deletion if the finalizer is not set.
 	if !r.containsFinalizer(companion) {
@@ -104,4 +119,15 @@ func (r *Reconciler) SetupWithManager(mgr kctrl.Manager) error {
 	return kctrl.NewControllerManagedBy(mgr).
 		For(&kcmv1alpha1.Companion{}).
 		Complete(r)
+}
+
+// loggerWithCompanion returns a logger with the given Companion CR details.
+func (r *Reconciler) loggerWithCompanion(companion *kcmv1alpha1.Companion) *zap.SugaredLogger {
+	return r.logger.With(
+		"kind", companion.GetObjectKind().GroupVersionKind().Kind,
+		"resourceVersion", companion.GetResourceVersion(),
+		"generation", companion.GetGeneration(),
+		"namespace", companion.GetNamespace(),
+		"name", companion.GetName(),
+	)
 }

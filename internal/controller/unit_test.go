@@ -4,6 +4,9 @@ import (
 	"context"
 	"testing"
 
+	testutils "github.com/kyma-project/kyma-companion-manager/test/utils"
+	"go.uber.org/zap"
+
 	"k8s.io/apimachinery/pkg/types"
 
 	kcmv1alpha1 "github.com/kyma-project/kyma-companion-manager/api/v1alpha1"
@@ -21,14 +24,19 @@ type MockedUnitTestEnvironment struct {
 	Client     client.Client
 	Reconciler *Reconciler
 	Recorder   *record.FakeRecorder
+	Logger     *zap.SugaredLogger
 }
 
 func NewMockedUnitTestEnvironment(t *testing.T, objs ...client.Object) *MockedUnitTestEnvironment {
 	t.Helper()
 
+	// setup logger
+	logger, err := testutils.NewSugaredLogger()
+	require.NoError(t, err)
+
 	// setup fake client for k8s
 	newScheme := runtime.NewScheme()
-	err := kcmv1alpha1.AddToScheme(newScheme)
+	err = kcmv1alpha1.AddToScheme(newScheme)
 	require.NoError(t, err)
 	err = kcorev1.AddToScheme(newScheme)
 	require.NoError(t, err)
@@ -46,12 +54,14 @@ func NewMockedUnitTestEnvironment(t *testing.T, objs ...client.Object) *MockedUn
 	reconciler := &Reconciler{
 		Client: fakeClient,
 		Scheme: newScheme,
+		logger: logger,
 	}
 
 	return &MockedUnitTestEnvironment{
 		Client:     fakeClient,
 		Reconciler: reconciler,
 		Recorder:   recorder,
+		Logger:     logger,
 	}
 }
 

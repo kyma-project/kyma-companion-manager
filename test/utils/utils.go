@@ -24,6 +24,9 @@ import (
 	"strings"
 	"time"
 
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
+
 	kcmv1alpha1 "github.com/kyma-project/kyma-companion-manager/api/v1alpha1"
 	kmetav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
@@ -152,6 +155,23 @@ func GetProjectDir() (string, error) {
 	}
 	wd = strings.Replace(wd, "/test/e2e", "", -1)
 	return wd, nil
+}
+
+func NewLogger() (*zap.Logger, error) {
+	loggerConfig := zap.NewDevelopmentConfig()
+	loggerConfig.EncoderConfig.TimeKey = "timestamp"
+	loggerConfig.Encoding = "json"
+	loggerConfig.EncoderConfig.EncodeTime = zapcore.TimeEncoderOfLayout("Jan 02 15:04:05.000000000")
+
+	return loggerConfig.Build()
+}
+
+func NewSugaredLogger() (*zap.SugaredLogger, error) {
+	logger, err := NewLogger()
+	if err != nil {
+		return nil, err
+	}
+	return logger.Sugar(), nil
 }
 
 func GetRandString(length int) string {

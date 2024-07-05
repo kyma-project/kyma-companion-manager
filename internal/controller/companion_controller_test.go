@@ -28,6 +28,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	operatorv1alpha1 "github.com/kyma-project/kyma-companion-manager/api/v1alpha1"
+	testutils "github.com/kyma-project/kyma-companion-manager/test/utils"
 )
 
 var _ = Describe("Companion Controller", func() {
@@ -68,12 +69,16 @@ var _ = Describe("Companion Controller", func() {
 		})
 		It("should successfully reconcile the resource", func() {
 			By("Reconciling the created resource")
+			logger, err := testutils.NewSugaredLogger()
+			Expect(err).NotTo(HaveOccurred())
+
 			controllerReconciler := &Reconciler{
 				Client: k8sClient,
 				Scheme: k8sClient.Scheme(),
+				logger: logger,
 			}
 
-			_, err := controllerReconciler.Reconcile(ctx, reconcile.Request{
+			_, err = controllerReconciler.Reconcile(ctx, reconcile.Request{
 				NamespacedName: typeNamespacedName,
 			})
 			Expect(err).NotTo(HaveOccurred())
