@@ -1,6 +1,8 @@
 # Kyma Companion Manager
 <!--- mandatory --->
 
+[![REUSE status](https://api.reuse.software/badge/github.com/kyma-project/kyma-companion-manager)](https://api.reuse.software/info/github.com/kyma-project/kyma-companion-manager)
+
 ## Overview
 <!--- mandatory section --->
 
