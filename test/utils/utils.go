@@ -17,8 +17,10 @@ limitations under the License.
 package utils
 
 import (
+	"errors"
 	"fmt"
 	"math/rand"
+	"net"
 	"os"
 	"os/exec"
 	"strings"
@@ -26,6 +28,7 @@ import (
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+	kcorev1 "k8s.io/api/core/v1"
 	kmetav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	kcmv1alpha1 "github.com/kyma-project/kyma-companion-manager/api/v1alpha1"
@@ -48,7 +51,10 @@ const (
 	NamespaceFormat = "namespace-%s"
 )
 
-var seededRand = rand.New(rand.NewSource(time.Now().UnixNano())) //nolint:gosec,gochecknoglobals // used in tests
+var (
+	seededRand            = rand.New(rand.NewSource(time.Now().UnixNano())) //nolint:gosec,gochecknoglobals,lll // used in tests
+	ErrPortCreationFailed = errors.New("failed to get port")
+)
 
 func warnError(err error) {
 	fmt.Fprintf(GinkgoWriter, "warning: %v\n", err)
@@ -182,12 +188,43 @@ func GetRandString(length int) string {
 	return string(b)
 }
 
+// GetFreePort determines a free port on the host. It does so by delegating the job to net.ListenTCP.
+// Then providing a port of 0 to net.ListenTCP, it will automatically choose a port for us.
+func GetFreePort() (int, error) {
+	if a, err := net.ResolveTCPAddr("tcp", "localhost:0"); err == nil {
+		var listener *net.TCPListener
+		if listener, err = net.ListenTCP("tcp", a); err == nil {
+			portAddr, ok := listener.Addr().(*net.TCPAddr)
+			if !ok {
+				return -1, ErrPortCreationFailed
+			}
+			port := portAddr.Port
+			err = listener.Close()
+			return port, err
+		}
+	}
+	return -1, nil
+}
+
 func GetRandomName() string {
 	return fmt.Sprintf(NameFormat, GetRandString(randomNameLen))
 }
 
 func GetRandomNamespaceName() string {
 	return fmt.Sprintf(NamespaceFormat, GetRandString(randomNameLen))
+}
+
+func NewNamespace(name string) *kcorev1.Namespace {
+	namespace := kcorev1.Namespace{
+		TypeMeta: kmetav1.TypeMeta{
+			Kind:       "Namespace",
+			APIVersion: "v1",
+		},
+		ObjectMeta: kmetav1.ObjectMeta{
+			Name: name,
+		},
+	}
+	return &namespace
 }
 
 func NewCompanionCR(opts ...CompanionOption) *kcmv1alpha1.Companion {
