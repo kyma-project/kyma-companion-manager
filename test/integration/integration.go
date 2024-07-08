@@ -41,9 +41,6 @@ const (
 	BigTimeOut               = 40 * time.Second
 	SmallTimeOut             = 5 * time.Second
 	SmallPollingInterval     = 1 * time.Second
-
-	NATSContainerName  = "nats"
-	NATSConfigFileName = "nats.conf"
 )
 
 // TestEnvironment provides mocked resources for integration tests.
