@@ -1,88 +1,26 @@
-/*
-Copyright 2024.
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
-
 package controller
 
+// **NOTE:** This file contains unit tests for companion_controller.go.
+// Integration tests for controller are located in the test/integration directory.
+
 import (
-	"context"
+	"testing"
 
-	"k8s.io/apimachinery/pkg/api/errors"
-	kmetav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/types"
-	"sigs.k8s.io/controller-runtime/pkg/reconcile"
+	"github.com/stretchr/testify/require"
 
-	kcmv1alpha1 "github.com/kyma-project/kyma-companion-manager/api/v1alpha1"
 	testutils "github.com/kyma-project/kyma-companion-manager/test/utils"
-
-	. "github.com/onsi/ginkgo/v2"
-	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("Companion Controller", func() {
-	Context("When reconciling a resource", func() {
-		const resourceName = "test-resource"
+func Test_loggerWithCompanion(t *testing.T) {
+	t.Parallel()
 
-		ctx := context.Background()
+	// given
+	testEnv := NewMockedUnitTestEnvironment(t)
+	givenCompanion := testutils.NewCompanionCR()
 
-		typeNamespacedName := types.NamespacedName{
-			Name:      resourceName,
-			Namespace: "default",
-		}
-		companion := &kcmv1alpha1.Companion{}
+	// when
+	gotLogger := testEnv.Reconciler.loggerWithCompanion(givenCompanion)
 
-		BeforeEach(func() {
-			By("creating the custom resource for the Kind Companion")
-			err := k8sClient.Get(ctx, typeNamespacedName, companion)
-			if err != nil && errors.IsNotFound(err) {
-				resource := &kcmv1alpha1.Companion{
-					ObjectMeta: kmetav1.ObjectMeta{
-						Name:      resourceName,
-						Namespace: "default",
-					},
-				}
-				Expect(k8sClient.Create(ctx, resource)).To(Succeed())
-			}
-		})
-
-		AfterEach(func() {
-			// cleanup logic after each test, like removing the resource instance.
-			resource := &kcmv1alpha1.Companion{}
-			err := k8sClient.Get(ctx, typeNamespacedName, resource)
-			Expect(err).NotTo(HaveOccurred())
-
-			By("Cleanup the specific resource instance Companion")
-			Expect(k8sClient.Delete(ctx, resource)).To(Succeed())
-		})
-		It("should successfully reconcile the resource", func() {
-			By("Reconciling the created resource")
-			logger, err := testutils.NewSugaredLogger()
-			Expect(err).NotTo(HaveOccurred())
-
-			controllerReconciler := &Reconciler{
-				Client: k8sClient,
-				Scheme: k8sClient.Scheme(),
-				logger: logger,
-			}
-
-			_, err = controllerReconciler.Reconcile(ctx, reconcile.Request{
-				NamespacedName: typeNamespacedName,
-			})
-			Expect(err).NotTo(HaveOccurred())
-			// Add more specific assertions depending on your controller's reconciliation logic.
-			// Example: If you expect a certain status condition after reconciliation, verify it here.
-		})
-	})
-})
+	// then
+	require.NotNil(t, gotLogger)
+}
