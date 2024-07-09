@@ -1,2 +1,9 @@
 resources:
 - manager.yaml
+- priority-class.yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+images:
+- name: controller
+  newName: mfaizan21/kyma-companion-manager
+  newTag: "12072024"

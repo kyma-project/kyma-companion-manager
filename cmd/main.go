@@ -25,6 +25,7 @@ import (
 	"go.uber.org/zap/zapcore"
 	"k8s.io/apimachinery/pkg/runtime"
 	kutilruntime "k8s.io/apimachinery/pkg/util/runtime"
+	"k8s.io/client-go/dynamic"
 	kkubernetesscheme "k8s.io/client-go/kubernetes/scheme"
 	kctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
@@ -33,7 +34,10 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
 
 	kcmv1alpha1 "github.com/kyma-project/kyma-companion-manager/api/v1alpha1"
+	"github.com/kyma-project/kyma-companion-manager/internal/backendmanager"
 	"github.com/kyma-project/kyma-companion-manager/internal/controller"
+	"github.com/kyma-project/kyma-companion-manager/pkg/env"
+	kcmk8s "github.com/kyma-project/kyma-companion-manager/pkg/k8s"
 
 	// Import all Kubernetes client auth plugins (e.g. Azure, GCP, OIDC, etc.)
 	// to ensure that exec-entrypoint and run can make use of them.
@@ -69,6 +73,9 @@ func main() { //nolint:funlen // main function needs to initialize many object.
 		"If set the metrics endpoint is served securely")
 	flag.BoolVar(&enableHTTP2, "enable-http2", false,
 		"If set, HTTP/2 will be enabled for the metrics and webhook servers")
+
+	// get configs.
+	configs := env.GetConfig()
 
 	logLevel := zapcore.DebugLevel
 	opts := kctrllogzap.Options{
@@ -113,7 +120,8 @@ func main() { //nolint:funlen // main function needs to initialize many object.
 		TLSOpts: tlsOpts,
 	})
 
-	mgr, err := kctrl.NewManager(kctrl.GetConfigOrDie(), kctrl.Options{
+	k8sRestCfg := kctrl.GetConfigOrDie()
+	mgr, err := kctrl.NewManager(k8sRestCfg, kctrl.Options{
 		Scheme: scheme,
 		Metrics: kctrlmetricsserver.Options{
 			BindAddress:   metricsAddr,
@@ -141,10 +149,29 @@ func main() { //nolint:funlen // main function needs to initialize many object.
 		os.Exit(1)
 	}
 
+	// setup k8s clients.
+	k8sClient := mgr.GetClient()
+	dynamicClient, err := dynamic.NewForConfig(k8sRestCfg)
+	if err != nil {
+		setupLog.Error(err, "unable to start dynamicClient")
+		os.Exit(1)
+	}
+	kubeClient := kcmk8s.NewKubeClient(k8sClient, "kyma-companion-manager", dynamicClient)
+
+	backendManager := backendmanager.NewBackendManager(
+		k8sClient,
+		kubeClient,
+		sugaredLogger,
+	)
+
+	// setup controller.
 	kcmController := controller.NewReconciler(
-		mgr.GetClient(),
+		k8sClient,
+		kubeClient,
+		backendManager,
 		mgr.GetScheme(),
 		sugaredLogger,
+		configs,
 	)
 
 	if err = kcmController.SetupWithManager(mgr); err != nil {

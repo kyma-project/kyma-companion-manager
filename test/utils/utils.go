@@ -28,10 +28,13 @@ import (
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+	kappsv1 "k8s.io/api/apps/v1"
 	kcorev1 "k8s.io/api/core/v1"
 	kmetav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	kcmv1alpha1 "github.com/kyma-project/kyma-companion-manager/api/v1alpha1"
+	kcmlabel "github.com/kyma-project/kyma-companion-manager/internal/label"
+	kcmk8sdeployment "github.com/kyma-project/kyma-companion-manager/pkg/k8s/deployment"
 
 	. "github.com/onsi/ginkgo/v2"
 )
@@ -251,4 +254,67 @@ func NewCompanionCR(opts ...CompanionOption) *kcmv1alpha1.Companion {
 	}
 
 	return eventing
+}
+
+func NewDeployment(name, namespace string, annotations map[string]string) *kappsv1.Deployment {
+	return &kappsv1.Deployment{
+		ObjectMeta: kmetav1.ObjectMeta{
+			Name:        name,
+			Namespace:   namespace,
+			Annotations: annotations,
+		},
+		Spec: kappsv1.DeploymentSpec{
+			Template: kcorev1.PodTemplateSpec{
+				ObjectMeta: kmetav1.ObjectMeta{
+					Name:        name,
+					Namespace:   namespace,
+					Annotations: annotations,
+				},
+				Spec: kcorev1.PodSpec{
+					Containers: []kcorev1.Container{
+						{
+							Name:  "companion",
+							Image: "test-image",
+						},
+					},
+				},
+			},
+		},
+	}
+}
+
+func NewCompanionDeployment(name, namespace string) *kappsv1.Deployment {
+	// define labels.
+	labels := kcmlabel.GetCommonLabels(name)
+
+	// define containers.
+	containers := []kcorev1.Container{
+		{
+			Name:            kcmlabel.ValueCompanionBackend,
+			Image:           "test-image:latest",
+			ImagePullPolicy: kcorev1.PullAlways,
+		},
+	}
+
+	// define deployment object.
+	deployment := kcmk8sdeployment.NewDeployment(
+		name,
+		namespace,
+		kcmk8sdeployment.WithLabels(labels),
+		kcmk8sdeployment.WithRestartPolicyAlways(),
+		kcmk8sdeployment.WithSelectorLabels(labels),
+		kcmk8sdeployment.WithContainers(containers),
+	)
+
+	return deployment
+}
+
+func NewConfigMap(name, namespace string) *kcorev1.ConfigMap {
+	configMap := &kcorev1.ConfigMap{
+		ObjectMeta: kmetav1.ObjectMeta{
+			Name:      name,
+			Namespace: namespace,
+		},
+	}
+	return configMap
 }

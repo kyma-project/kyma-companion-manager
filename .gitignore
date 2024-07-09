@@ -38,3 +38,5 @@ vendor/
 
 **/.env
 **/.env.dev
+
+kyma-companion-manager.yaml
