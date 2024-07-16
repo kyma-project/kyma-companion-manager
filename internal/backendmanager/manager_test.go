@@ -189,11 +189,14 @@ func Test_GetBackendConfig(t *testing.T) {
 
 	// then
 	require.NoError(t, err)
+	sampleSecretData := "{\"test-key\":\"dGVzdC12YWx1ZQ==\"}"
+	sampleConfigData := "{\"test-key\":\"test-value\"}"
+
 	wantConfig := &Config{
-		HanaDB:       []byte("{\"test-key\":\"dGVzdC12YWx1ZQ==\"}"),
-		Redis:        []byte("{\"test-key\":\"dGVzdC12YWx1ZQ==\"}"),
-		AICoreSecret: []byte("{\"test-key\":\"dGVzdC12YWx1ZQ==\"}"),
-		AICoreConfig: []byte("{\"test-key\":\"test-value\"}"),
+		HanaDB:       []byte(sampleSecretData),
+		Redis:        []byte(sampleSecretData),
+		AICoreSecret: []byte(sampleSecretData),
+		AICoreConfig: []byte(sampleConfigData),
 	}
 
 	// compare object.

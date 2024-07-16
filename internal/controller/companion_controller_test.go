@@ -5,7 +5,6 @@ package controller
 
 import (
 	"context"
-	"errors"
 	"testing"
 
 	"github.com/stretchr/testify/mock"
@@ -17,8 +16,6 @@ import (
 	"github.com/kyma-project/kyma-companion-manager/internal/backendmanager"
 	testutils "github.com/kyma-project/kyma-companion-manager/test/utils"
 )
-
-var ErrShouldNotBeCalled = errors.New("this method should not have being called")
 
 func Test_loggerWithCompanion(t *testing.T) {
 	t.Parallel()
