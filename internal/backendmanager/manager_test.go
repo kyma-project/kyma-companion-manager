@@ -189,7 +189,7 @@ func Test_GetBackendConfig(t *testing.T) {
 
 	// then
 	require.NoError(t, err)
-	sampleSecretData := "{\"test-key\":\"dGVzdC12YWx1ZQ==\"}"
+	sampleSecretData := "{\"test-key\":\"dGVzdC12YWx1ZQ==\"}" //nolint:gosec // test data.
 	sampleConfigData := "{\"test-key\":\"test-value\"}"
 
 	wantConfig := &Config{
