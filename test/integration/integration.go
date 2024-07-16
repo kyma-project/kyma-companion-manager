@@ -27,7 +27,10 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
 
 	kcmv1alpha1 "github.com/kyma-project/kyma-companion-manager/api/v1alpha1"
+	"github.com/kyma-project/kyma-companion-manager/internal/backendmanager"
 	kcmctrl "github.com/kyma-project/kyma-companion-manager/internal/controller"
+	"github.com/kyma-project/kyma-companion-manager/pkg/env"
+	kcmk8s "github.com/kyma-project/kyma-companion-manager/pkg/k8s"
 	testutils "github.com/kyma-project/kyma-companion-manager/test/utils"
 )
 
@@ -48,6 +51,7 @@ type TestEnvironment struct {
 	EnvTestInstance  *envtest.Environment
 	k8sClient        client.Client
 	K8sDynamicClient *dynamic.DynamicClient
+	KubeClient       kcmk8s.Client
 	Reconciler       *kcmctrl.Reconciler
 	Logger           *zap.SugaredLogger
 	Recorder         *record.EventRecorder
@@ -55,8 +59,7 @@ type TestEnvironment struct {
 }
 
 //nolint:funlen // Used in testing
-func NewTestEnvironment(projectRootDir string, allowedCompanionCR *kcmv1alpha1.Companion,
-) (*TestEnvironment, error) {
+func NewTestEnvironment(projectRootDir string) (*TestEnvironment, error) {
 	var err error
 
 	// setup logger
@@ -75,6 +78,11 @@ func NewTestEnvironment(projectRootDir string, allowedCompanionCR *kcmv1alpha1.C
 	err = kcmv1alpha1.AddToScheme(kkubernetesscheme.Scheme)
 	if err != nil {
 		return nil, err
+	}
+
+	// define configs.
+	configs := env.Config{
+		KymaCompanionBackendImage: "kyma-project/kyma-companion-backend:latest",
 	}
 
 	// +kubebuilder:scaffold:scheme
@@ -107,11 +115,22 @@ func NewTestEnvironment(projectRootDir string, allowedCompanionCR *kcmv1alpha1.C
 	}
 	recorder := ctrlMgr.GetEventRecorderFor("kyma-companion-manager")
 
+	kubeClient := kcmk8s.NewKubeClient(ctrlMgr.GetClient(), "kyma-companion-manager", dynamicClient)
+
+	backendManager := backendmanager.NewBackendManager(
+		k8sClient,
+		kubeClient,
+		sugaredLogger,
+	)
+
 	// setup reconciler
 	kcmReconciler := kcmctrl.NewReconciler(
 		ctrlMgr.GetClient(),
+		kubeClient,
+		backendManager,
 		ctrlMgr.GetScheme(),
 		sugaredLogger,
+		configs,
 	)
 	if err = (kcmReconciler).SetupWithManager(ctrlMgr); err != nil {
 		return nil, err

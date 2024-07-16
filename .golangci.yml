@@ -135,7 +135,20 @@ linters-settings:
         alias: kctrlmetricsserver
       - pkg: sigs.k8s.io/controller-runtime/pkg/log/zap
         alias: kctrllogzap
-
+      - pkg: github.com/kyma-project/kyma-companion-manager/pkg/k8s
+        alias: kcmk8s
+      - pkg: github.com/kyma-project/kyma-companion-manager/internal/label
+        alias: kcmlabel
+      - pkg: github.com/kyma-project/kyma-companion-manager/pkg/k8s/deployment
+        alias: kcmk8sdeployment
+      - pkg: github.com/kyma-project/kyma-companion-manager/pkg/k8s/secret
+        alias: kcmk8ssecret
+      - pkg: github.com/kyma-project/kyma-companion-manager/pkg/utils
+        alias: kcmutils
+      - pkg: github.com/kyma-project/kyma-companion-manager/pkg/k8s/mocks
+        alias: kcmk8smocks
+      - pkg: github.com/kyma-project/kyma-companion-manager/internal/backendmanager/mocks
+        alias: backendmanagermocks
   ireturn:
     allow:
       - anon
