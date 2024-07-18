@@ -35,6 +35,9 @@ const (
 type CompanionSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
+
+	Namespaces          []string `json:"namespaces"`
+	DeploymentNamespace string   `json:"deploymentNamespace"`
 }
 
 // CompanionStatus defines the observed state of Companion.
