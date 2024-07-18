@@ -19,4 +19,11 @@ spec:
     - ai-core
     - ai-ghcr-login-secret
   containerPort: 5000
+  resources:
+    limits:
+      cpu: 1
+      memory: 1Gi
+    requests:
+      cpu: 500m
+      memory: 256Mi
 

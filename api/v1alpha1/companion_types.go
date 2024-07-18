@@ -36,11 +36,12 @@ type CompanionSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 
-	Namespaces          []string `json:"namespaces"`
-	DeploymentNamespace string   `json:"deploymentNamespace"`
-	ConfigMapNames      []string `json:"configMapNames"`
-	SecretsNames        []string `json:"secretNames"`
-	ContainerPort       int32    `json:"containerPort"`
+	Namespaces          []string      `json:"namespaces"`
+	DeploymentNamespace string        `json:"deploymentNamespace"`
+	ConfigMapNames      []string      `json:"configMapNames"`
+	SecretsNames        []string      `json:"secretNames"`
+	ContainerPort       int32         `json:"containerPort"`
+	Resources           ResourceTypes `json:"resources"`
 }
 
 // CompanionStatus defines the observed state of Companion.
@@ -59,6 +60,18 @@ type CompanionStatus struct {
 	// - `Processing` if the resources managed by the Kyma companion manager are being created or updated.<br/>
 	// - `Error` if an error occurred while reconciling the Companion custom resource.
 	State string `json:"state"`
+}
+
+// ResourceRequirements defines the CPU and Memory requirements for the resources.
+type ResourceTypes struct {
+	Limits   ResourceValues `json:"limits"`
+	Requests ResourceValues `json:"requests"`
+}
+
+// ResourceValues defines the CPU and Memory values for the resources.
+type ResourceValues struct {
+	CPU    string `json:"cpu"`
+	Memory string `json:"memory"`
 }
 
 // +kubebuilder:object:root=true
