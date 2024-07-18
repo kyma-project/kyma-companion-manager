@@ -38,6 +38,8 @@ type CompanionSpec struct {
 
 	Namespaces          []string `json:"namespaces"`
 	DeploymentNamespace string   `json:"deploymentNamespace"`
+	ConfigMapNames      []string `json:"configMapNames"`
+	SecretsNames        []string `json:"secretNames"`
 }
 
 // CompanionStatus defines the observed state of Companion.
