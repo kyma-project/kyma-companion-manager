@@ -46,7 +46,11 @@ type CompanionSpec struct {
 type CompanionStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
-
+	NamespacesExist  map[string]bool              `json:"namespacesExist"`
+	ConfigMapsExists map[string]bool              `json:"configMapsExists"`
+	SecretsExists    map[string]bool              `json:"secretsExists"`
+	ConfigMapsData   map[string]map[string]string `json:"configMapsData,omitempty"`
+	SecretsData      map[string]map[string][]byte `json:"secretsData,omitempty"`
 	// Defines the overall state of the Companion custom resource.<br/>
 	// - `Ready` when all the resources managed by the Kyma companion manager are deployed successfully and
 	// the companion backend is ready.<br/>
