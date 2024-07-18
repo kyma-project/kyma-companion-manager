@@ -89,12 +89,12 @@ type CompanionStatus struct {
 
 // ResourceRequirements defines the CPU and Memory requirements for the resources.
 type ResourceTypes struct {
-	Limits   ResourceValues `json:"limits"`
-	Requests ResourceValues `json:"requests"`
+	Limits   ResourceList `json:"limits"`
+	Requests ResourceList `json:"requests"`
 }
 
 // ResourceValues defines the CPU and Memory values for the resources.
-type ResourceValues struct {
+type ResourceList struct {
 	CPU    string `json:"cpu"`
 	Memory string `json:"memory"`
 }
