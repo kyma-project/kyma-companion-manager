@@ -20,12 +20,11 @@ import (
 	kmetav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
-
 const (
 	StateReady      string = "Ready"
 	StateError      string = "Error"
 	StateProcessing string = "Processing"
+	StateDeleting   string = "Deleting"
 	StateWarning    string = "Warning"
 )
 
@@ -33,32 +32,58 @@ const (
 
 // CompanionSpec defines the desired state of Companion.
 type CompanionSpec struct {
-	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
+	// List of namespaces which are prerequisites for the Kyma companion manager.
+	// Defaults:
+	// - 'ai-core': Main namespace for the SAP AI Core component.
+	// - 'hana-cloud': Main namespace for the SAP HANA Cloud vector instance.
+	// - 'redis': Main namespace for the Redis.
+	Namespaces []string `json:"namespaces"`
 
-	Namespaces          []string      `json:"namespaces"`
-	DeploymentNamespace string        `json:"deploymentNamespace"`
-	ConfigMapNames      []string      `json:"configMapNames"`
-	SecretsNames        []string      `json:"secretNames"`
-	ContainerPort       int32         `json:"containerPort"`
-	Resources           ResourceTypes `json:"resources"`
+	// Namespace where the deployment will be created.
+	DeploymentNamespace string `json:"deploymentNamespace"`
+
+	// Required ConfigMaps names
+	ConfigMapNames []string `json:"configMapNames"`
+
+	// Required Secrets names
+	SecretsNames []string `json:"secretNames"`
+
+	// Container port for the companion backend. Default value is 5000.
+	ContainerPort int32 `json:"containerPort"`
+
+	// Specify required resources and resource limits for the companion backend.
+	// Example:
+	// resources:
+	//   limits:
+	//     cpu: 1
+	//     memory: 1Gi
+	//   requests:
+	//     cpu: 500m
+	//     memory: 256Mi
+	Resources ResourceTypes `json:"resources"`
 }
 
 // CompanionStatus defines the observed state of Companion.
 type CompanionStatus struct {
-	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
-	NamespacesExist  map[string]bool              `json:"namespacesExist"`
-	ConfigMapsExists map[string]bool              `json:"configMapsExists"`
-	SecretsExists    map[string]bool              `json:"secretsExists"`
-	ConfigMapsData   map[string]map[string]string `json:"configMapsData,omitempty"`
-	SecretsData      map[string]map[string][]byte `json:"secretsData,omitempty"`
+	// Result of prerequisites validation.
+	// NamespacesExist: Map of namespaces and their existence status.
+	NamespacesExist map[string]bool `json:"namespacesExist"`
+	// ConfigMapsExists: Map of ConfigMaps and their existence status.
+	ConfigMapsExists map[string]bool `json:"configMapsExists"`
+	// SecretsExists: Map of Secrets and their existence status.
+	SecretsExists map[string]bool `json:"secretsExists"`
+	// ConfigMapsData: Map of ConfigMaps and their data. (optional)
+	ConfigMapsData map[string]map[string]string `json:"configMapsData,omitempty"`
+	// SecretsData: Map of Secrets and their data. (optional)
+	SecretsData map[string]map[string][]byte `json:"secretsData,omitempty"`
+
 	// Defines the overall state of the Companion custom resource.<br/>
 	// - `Ready` when all the resources managed by the Kyma companion manager are deployed successfully and
 	// the companion backend is ready.<br/>
 	// - `Warning` if there is a user input misconfiguration.<br/>
 	// - `Processing` if the resources managed by the Kyma companion manager are being created or updated.<br/>
 	// - `Error` if an error occurred while reconciling the Companion custom resource.
+	// - `Deleting` if the resources managed by the Kyma companion manager are being deleted.
 	State string `json:"state"`
 }
 
