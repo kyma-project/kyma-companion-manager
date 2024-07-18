@@ -12,9 +12,11 @@ spec:
     - redis
     - hana-cloud
     - ai-core
+  deploymentNamespace: ai-core
   configMapNames:
     - ai-backend-config
   secretNames:
     - ai-core
     - ai-ghcr-login-secret
-  secretsNamespace: ai-core
+  containerPort: 5000
+
