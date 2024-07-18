@@ -34,9 +34,9 @@ const (
 type CompanionSpec struct {
 	// List of namespaces which are prerequisites for the Kyma companion manager.
 	// Defaults:
-	// - 'ai-core': Main namespace for the SAP AI Core component.
-	// - 'hana-cloud': Main namespace for the SAP HANA Cloud vector instance.
-	// - 'redis': Main namespace for the Redis.
+	// - 'ai-core': Main namespace. Namespace for the SAP AI Core component.
+	// - 'hana-cloud': Namespace for the SAP HANA Cloud vector instance.
+	// - 'redis': Namespace for the Redis.
 	Namespaces []string `json:"namespaces"`
 
 	// Namespace where the deployment will be created.
