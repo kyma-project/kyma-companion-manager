@@ -37,9 +37,11 @@ type CompanionSpec struct {
 	// - 'ai-core': Main namespace. Namespace for the SAP AI Core component.
 	// - 'hana-cloud': Namespace for the SAP HANA Cloud vector instance.
 	// - 'redis': Namespace for the Redis.
+	// +kubebuilder:default:={namespaces:{"ai-core","hana-cloud","redis"}}
 	Namespaces []string `json:"namespaces"`
 
 	// Namespace where the deployment will be created.
+	// +kubebuilder:default:={deploymentNamespace:"ai-core"}
 	DeploymentNamespace string `json:"deploymentNamespace"`
 
 	// Required ConfigMaps names
@@ -49,6 +51,7 @@ type CompanionSpec struct {
 	SecretsNames []string `json:"secretNames"`
 
 	// Replica count for the companion backend. Default value is 1.
+	// +kubebuilder:default:={replicas:1}
 	Replicas int32 `json:"replicas"`
 
 	// Container port for the companion backend. Default value is 5000.
@@ -63,6 +66,7 @@ type CompanionSpec struct {
 	//   requests:
 	//     cpu: 500m
 	//     memory: 256Mi
+	// +kubebuilder:default:={resources:{limits:{cpu:"4",memory:"4Gi"},requests:{cpu:"500m",memory:"256Mi"}}}
 	Resources ResourceTypes `json:"resources"`
 }
 

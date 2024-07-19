@@ -13,6 +13,9 @@
     - [6. Namespaces, ConfigMaps, Secrets, ContainerPort, Resources (requested, limit), and Replicas are configurable.](#6-namespaces-configmaps-secrets-containerport-resources-requested-limit-and-replicas-are-configurable)
     - [7. Namespaces, ConfigMaps, Secrets, Resources (requested, limit), and Replicas are configurable.](#7-namespaces-configmaps-secrets-resources-requested-limit-and-replicas-are-configurable)
   - [Conclusion - Suggestion](#conclusion---suggestion)
+  - [Other](#other)
+    - [Default values](#default-values)
+    - [Status.state](#statusstate)
 
 ## Companion Manager CR
 
@@ -316,9 +319,16 @@ properties:
       type: string
     type: array
   deploymentNamespace:
+    default:
+      deploymentNamespace: ai-core
     description: Namespace where the deployment will be created.
     type: string
   namespaces:
+    default:
+      namespaces:
+        - ai-core
+        - hana-cloud
+        - redis
     description: |-
       List of namespaces which are prerequisites for the Kyma companion manager.
       Defaults:
@@ -329,11 +339,21 @@ properties:
       type: string
     type: array
   replicas:
+    default:
+      replicas: 1
     description: Replica count for the companion backend. Default value
       is 1.
     format: int32
     type: integer
   resources:
+    default:
+      resources:
+        limits:
+          cpu: "4"
+          memory: 4Gi
+        requests:
+          cpu: 500m
+          memory: 256Mi
     description: |-
       Specify required resources and resource limits for the companion backend.
       Example:
@@ -388,12 +408,12 @@ required:
 type: object
 ```
 
-
 ### Conclusion - Suggestion
 
 The best option is the 7th option. It provides the most flexibility for the user. The user can change the most important fields for the companion application, which ensures to be easy to deploy, easy to maintain, and automation support.
 
 Accordingly the user can change the following fields:
+
 - Resources (requested, limit. Accordingly the resource parameters can be changed depending on the load)
 - Replicas (According to the load or usage, the user can change the number of replicas)
 - Namespaces (check if the namespaces are available)
@@ -401,5 +421,70 @@ Accordingly the user can change the following fields:
 - ConfigMaps (check if the ConfigMaps are available)
 - Secrets (check if the Secrets are available)
 
+### Other
 
+#### Default values
 
+In the final CRD, we should define the default values for the fields. The default values should be defined in the CRD.
+
+#### Status.state
+
+Kyma modules should provide the `status.state`, because the Lifecycle Manager then updates the Kyma CR of the cluster based on the observed status changes in the module CR (similar to a native Kubernetes deployment tracking availability).
+
+https://github.com/kyma-project/lifecycle-manager/blob/main/docs/modularization.md
+
+```yaml
+          status:
+            description: CompanionStatus defines the observed state of Companion.
+            properties:
+              configMapsData:
+                additionalProperties:
+                  additionalProperties:
+                    type: string
+                  type: object
+                description: 'ConfigMapsData: Map of ConfigMaps and their data. (optional)'
+                type: object
+              configMapsExists:
+                additionalProperties:
+                  type: boolean
+                description: 'ConfigMapsExists: Map of ConfigMaps and their existence
+                  status.'
+                type: object
+              namespacesExist:
+                additionalProperties:
+                  type: boolean
+                description: |-
+                  Result of prerequisites validation.
+                  NamespacesExist: Map of namespaces and their existence status.
+                type: object
+              secretsData:
+                additionalProperties:
+                  additionalProperties:
+                    format: byte
+                    type: string
+                  type: object
+                description: 'SecretsData: Map of Secrets and their data. (optional)'
+                type: object
+              secretsExists:
+                additionalProperties:
+                  type: boolean
+                description: 'SecretsExists: Map of Secrets and their existence status.'
+                type: object
+              state:
+                description: |-
+                  Defines the overall state of the Companion custom resource.<br/>
+                  - `Ready` when all the resources managed by the Kyma companion manager are deployed successfully and
+                  the companion backend is ready.<br/>
+                  - `Warning` if there is a user input misconfiguration.<br/>
+                  - `Processing` if the resources managed by the Kyma companion manager are being created or updated.<br/>
+                  - `Error` if an error occurred while reconciling the Companion custom resource.
+                  - `Deleting` if the resources managed by the Kyma companion manager are being deleted.
+                type: string
+            required:
+            - configMapsExists
+            - namespacesExist
+            - secretsExists
+            - state
+            type: object
+        type: object
+```
