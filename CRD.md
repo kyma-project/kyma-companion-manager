@@ -1,5 +1,19 @@
 # Custom Resource Definitions (CRDs)
 
+## Table of Contents
+
+- [Companion Manager CR](#companion-manager-cr)
+  - [Specification](#specification)
+  - [Options](#options)
+    - [1. All fields are hardcoded in the CRD.](#1-all-fields-are-hardcoded-in-the-crd)
+    - [2. Namespaces are configurable.](#2-namespaces-are-configurable)
+    - [3. Namespaces, ConfigMaps, and Secrets are configurable.](#3-namespaces-configmaps-and-secrets-are-configurable)
+    - [4. Namespaces, ConfigMaps, Secrets and ContainerPort are configurable.](#4-namespaces-configmaps-secrets-and-containerport-are-configurable)
+    - [5. Namespaces, ConfigMaps, Secrets, ContainerPort, and Resources (requested, limit) are configurable.](#5-namespaces-configmaps-secrets-containerport-and-resources-requested-limit-are-configurable)
+    - [6. Namespaces, ConfigMaps, Secrets, ContainerPort, Resources (requested, limit), and Replicas are configurable.](#6-namespaces-configmaps-secrets-containerport-resources-requested-limit-and-replicas-are-configurable)
+    - [7. Namespaces, ConfigMaps, Secrets, Resources (requested, limit), and Replicas are configurable.](#7-namespaces-configmaps-secrets-resources-requested-limit-and-replicas-are-configurable)
+  - [Conclusion - Suggestion](#conclusion---suggestion)
+
 ## Companion Manager CR
 
 The Companion Manager CR (Custom Resource) is the companion backend in Kyma.
@@ -287,3 +301,105 @@ required:
   - secretNames
 type: object
 ```
+
+7. Namespaces, ConfigMaps, Secrets, Resources (requested, limit), and Replicas are configurable.
+
+The user can change the namespaces in which are required for the companion application. (SAP AI Core, Redis, Hana Cloud) User also can change the deployment namespace, ConfigMaps, Secrets, Resources (requested, limit), and Replicas.
+
+[config/crd/bases/operator.kyma-project.io_companions.yaml](config/crd/bases/operator.kyma-project.io_companions.yaml)
+
+```yaml
+properties:
+  configMapNames:
+    description: Required ConfigMaps names
+    items:
+      type: string
+    type: array
+  deploymentNamespace:
+    description: Namespace where the deployment will be created.
+    type: string
+  namespaces:
+    description: |-
+      List of namespaces which are prerequisites for the Kyma companion manager.
+      Defaults:
+      - 'ai-core': Main namespace. Namespace for the SAP AI Core component.
+      - 'hana-cloud': Namespace for the SAP HANA Cloud vector instance.
+      - 'redis': Namespace for the Redis.
+    items:
+      type: string
+    type: array
+  replicas:
+    description: Replica count for the companion backend. Default value
+      is 1.
+    format: int32
+    type: integer
+  resources:
+    description: |-
+      Specify required resources and resource limits for the companion backend.
+      Example:
+      resources:
+        limits:
+          cpu: 1
+          memory: 1Gi
+        requests:
+          cpu: 500m
+          memory: 256Mi
+    properties:
+      limits:
+        description: ResourceValues defines the CPU and Memory values
+          for the resources.
+        properties:
+          cpu:
+            type: string
+          memory:
+            type: string
+        required:
+          - cpu
+          - memory
+        type: object
+      requests:
+        description: ResourceValues defines the CPU and Memory values
+          for the resources.
+        properties:
+          cpu:
+            type: string
+          memory:
+            type: string
+        required:
+          - cpu
+          - memory
+        type: object
+    required:
+      - limits
+      - requests
+    type: object
+  secretNames:
+    description: Required Secrets names
+    items:
+      type: string
+    type: array
+required:
+  - configMapNames
+  - deploymentNamespace
+  - namespaces
+  - replicas
+  - resources
+  - secretNames
+type: object
+```
+
+
+### Conclusion - Suggestion
+
+The best option is the 7th option. It provides the most flexibility for the user. The user can change the most important fields for the companion application, which ensures to be easy to deploy, easy to maintain, and automation support.
+
+Accordingly the user can change the following fields:
+- Resources (requested, limit. Accordingly the resource parameters can be changed depending on the load)
+- Replicas (According to the load or usage, the user can change the number of replicas)
+- Namespaces (check if the namespaces are available)
+- Deployment namespace (in this case, the user can deploy the companion application in a different namespace)
+- ConfigMaps (check if the ConfigMaps are available)
+- Secrets (check if the Secrets are available)
+
+
+
