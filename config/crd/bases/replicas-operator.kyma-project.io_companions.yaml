@@ -62,6 +62,11 @@ spec:
                 items:
                   type: string
                 type: array
+              replicas:
+                description: Replica count for the companion backend. Default value
+                  is 1.
+                format: int32
+                type: integer
               resources:
                 description: |-
                   Specify required resources and resource limits for the companion backend.
@@ -112,6 +117,7 @@ spec:
             - containerPort
             - deploymentNamespace
             - namespaces
+            - replicas
             - resources
             - secretNames
             type: object

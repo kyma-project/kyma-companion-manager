@@ -48,6 +48,9 @@ type CompanionSpec struct {
 	// Required Secrets names
 	SecretsNames []string `json:"secretNames"`
 
+	// Replica count for the companion backend. Default value is 1.
+	Replicas int32 `json:"replicas"`
+
 	// Container port for the companion backend. Default value is 5000.
 	ContainerPort int32 `json:"containerPort"`
 
