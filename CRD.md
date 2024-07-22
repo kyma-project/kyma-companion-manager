@@ -15,7 +15,7 @@
   - [7. Namespaces, ConfigMaps, Secrets, Resources (requested, limit), and Replicas are configurable.](#7-namespaces-configmaps-secrets-resources-requested-limit-and-replicas-are-configurable)
   - [8. Namespaces, ConfigMaps, Secrets, Resources (requested, limit), Replicas, Annotations, and Labels are configurable.](#8-namespaces-configmaps-secrets-resources-requested-limit-replicas-annotations-and-labels-are-configurable)
 - [Conclusion - Suggestion for the CRD](#conclusion---suggestion-for-the-crd)
-  - [Sample](#sample)
+  - [Sample manifest](#sample-manifest)
 - [Other](#other)
   - [Default values](#default-values)
   - [Status.state](#statusstate)
@@ -547,7 +547,7 @@ Accordingly the user can change the following fields:
 - Annotations (add annotations to the companion application) - in option 8
 - Labels (add labels to the companion application) - in option 8
 
-### Sample
+### Sample manifest
 
 [config/samples/default.yaml](config/samples/default.yaml)
 
