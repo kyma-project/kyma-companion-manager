@@ -306,7 +306,7 @@ required:
 type: object
 ```
 
-7. Namespaces, ConfigMaps, Secrets, Resources (requested, limit), and Replicas are configurable.
+#### 7. Namespaces, ConfigMaps, Secrets, Resources (requested, limit), and Replicas are configurable.
 
 The user can change the namespaces in which are required for the companion application. (SAP AI Core, Redis, Hana Cloud) User also can change the deployment namespace, ConfigMaps, Secrets, Resources (requested, limit), and Replicas.
 
@@ -409,7 +409,7 @@ required:
 type: object
 ```
 
-8. Namespaces, ConfigMaps, Secrets, Resources (requested, limit), Replicas, Annotations, and Labels are configurable.
+#### 8. Namespaces, ConfigMaps, Secrets, Resources (requested, limit), Replicas, Annotations, and Labels are configurable.
 
 The user can change the namespaces in which are required for the companion application. (SAP AI Core, Redis, Hana Cloud) User also can change the deployment namespace, ConfigMaps, Secrets, Resources (requested, limit), Replicas, Annotations, and Labels.
 
