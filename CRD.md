@@ -14,7 +14,7 @@
   - [6. Namespaces, ConfigMaps, Secrets, ContainerPort, Resources (requested, limit), and Replicas are configurable.](#6-namespaces-configmaps-secrets-containerport-resources-requested-limit-and-replicas-are-configurable)
   - [7. Namespaces, ConfigMaps, Secrets, Resources (requested, limit), and Replicas are configurable.](#7-namespaces-configmaps-secrets-resources-requested-limit-and-replicas-are-configurable)
   - [8. Namespaces, ConfigMaps, Secrets, Resources (requested, limit), Replicas, Annotations, and Labels are configurable.](#8-namespaces-configmaps-secrets-resources-requested-limit-replicas-annotations-and-labels-are-configurable)
-- [Conclusion - Suggestion](#conclusion---suggestion)
+- [Conclusion - Suggestion for the CRD](#conclusion---suggestion-for-the-crd)
 - [Other](#other)
   - [Default values](#default-values)
   - [Status.state](#statusstate)
@@ -54,9 +54,13 @@ From this reason we should define the best Custom Resource Definition (CRD) for 
 
 ## Deployment steps
 
+This is a very high level overview of the deployment steps. This is not a detailed deployment guide.
+
 ![Deployment steps](docs/images/cr-deployment.drawio.png)
 
 ## CRD Options
+
+We could use the following CRD (Custom Resource Definition) options for the Companion Manager CR.
 
 ### 1. All fields are hardcoded in the CRD.
 
@@ -527,7 +531,7 @@ required:
 type: object
 ```
 
-## Conclusion - Suggestion
+## Conclusion - Suggestion for the CRD
 
 The best option is the option 7 or 8. These provide the most flexibility for the user. The user can change the most important fields for the companion application, which ensures to be easy to deploy, easy to maintain, and automation support.
 
