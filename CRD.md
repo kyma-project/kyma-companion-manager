@@ -12,6 +12,7 @@
     - [5. Namespaces, ConfigMaps, Secrets, ContainerPort, and Resources (requested, limit) are configurable.](#5-namespaces-configmaps-secrets-containerport-and-resources-requested-limit-are-configurable)
     - [6. Namespaces, ConfigMaps, Secrets, ContainerPort, Resources (requested, limit), and Replicas are configurable.](#6-namespaces-configmaps-secrets-containerport-resources-requested-limit-and-replicas-are-configurable)
     - [7. Namespaces, ConfigMaps, Secrets, Resources (requested, limit), and Replicas are configurable.](#7-namespaces-configmaps-secrets-resources-requested-limit-and-replicas-are-configurable)
+    - [8. Namespaces, ConfigMaps, Secrets, Resources (requested, limit), Replicas, Annotations, and Labels are configurable.](#8-namespaces-configmaps-secrets-resources-requested-limit-replicas-annotations-and-labels-are-configurable)
   - [Conclusion - Suggestion](#conclusion---suggestion)
   - [Other](#other)
     - [Default values](#default-values)
@@ -56,7 +57,7 @@ From this reason we should define the best Custom Resource Definition (CRD) for 
 
 The user cannot change any field.
 
-[config/crd/bases/all-hardcoded-operator.kyma-project.io_companions.yaml](config/crd/bases/all-hardcoded-operator.kyma-project.io_companions.yaml)
+[config/crd/bases/1-operator.kyma-project.io_companions.yaml](config/crd/bases/1-operator.kyma-project.io_companions.yaml)
 
 ```yaml
 properties:
@@ -66,7 +67,7 @@ properties:
 
 The user can change the namespaces in which are required for the companion application. (SAP AI Core, Redis, Hana Cloud) User also can change the deployment namespace.
 
-[config/crd/bases/namespaces-operator.kyma-project.io_companions.yaml](config/crd/bases/namespaces-operator.kyma-project.io_companions.yaml)
+[config/crd/bases/2-operator.kyma-project.io_companions.yaml](config/crd/bases/2-operator.kyma-project.io_companions.yaml)
 
 ```yaml
 properties:
@@ -86,7 +87,7 @@ type: object
 
 The user can change the namespaces in which are required for the companion application. (SAP AI Core, Redis, Hana Cloud) User also can change the deployment namespace, ConfigMaps, and Secrets.
 
-[config/crd/bases/configmaps-secrets-operator.kyma-project.io_companions.yaml](config/crd/bases/configmaps-secrets-operator.kyma-project.io_companions.yaml)
+[config/crd/bases/c3-operator.kyma-project.io_companions.yaml](config/crd/bases/3-operator.kyma-project.io_companions.yaml)
 
 ```yaml
 properties:
@@ -116,7 +117,7 @@ type: object
 
 The user can change the namespaces in which are required for the companion application. (SAP AI Core, Redis, Hana Cloud) User also can change the deployment namespace, ConfigMaps, Secrets, and ContainerPort.
 
-[config/crd/bases/containerport-operator.kyma-project.io_companions.yaml](config/crd/bases/containerport-operator.kyma-project.io_companions.yaml)
+[config/crd/bases/4-operator.kyma-project.io_companions.yaml](config/crd/bases/4-operator.kyma-project.io_companions.yaml)
 
 ```yaml
 properties:
@@ -150,7 +151,7 @@ type: object
 
 The user can change the namespaces in which are required for the companion application. (SAP AI Core, Redis, Hana Cloud) User also can change the deployment namespace, ConfigMaps, Secrets, ContainerPort, and Resources (requested, limit).
 
-[config/crd/bases/resources-operator.kyma-project.io_companions.yaml](config/crd/bases/resources-operator.kyma-project.io_companions.yaml)
+[config/crd/bases/5-operator.kyma-project.io_companions.yaml](config/crd/bases/5-operator.kyma-project.io_companions.yaml)
 
 ```yaml
 properties:
@@ -217,7 +218,7 @@ type: object
 
 The user can change the namespaces in which are required for the companion application. (SAP AI Core, Redis, Hana Cloud) User also can change the deployment namespace, ConfigMaps, Secrets, ContainerPort, Resources (requested, limit), and Replicas.
 
-[config/crd/bases/replicas-operator.kyma-project.io_companions.yaml](config/crd/bases/replicas-operator.kyma-project.io_companions.yaml)
+[config/crd/bases/6-operator.kyma-project.io_companions.yaml](config/crd/bases/6-operator.kyma-project.io_companions.yaml)
 
 ```yaml
 properties:
@@ -309,7 +310,7 @@ type: object
 
 The user can change the namespaces in which are required for the companion application. (SAP AI Core, Redis, Hana Cloud) User also can change the deployment namespace, ConfigMaps, Secrets, Resources (requested, limit), and Replicas.
 
-[config/crd/bases/operator.kyma-project.io_companions.yaml](config/crd/bases/operator.kyma-project.io_companions.yaml)
+[config/crd/bases/7-operator.kyma-project.io_companions.yaml](config/crd/bases/7-operator.kyma-project.io_companions.yaml)
 
 ```yaml
 properties:
@@ -408,9 +409,122 @@ required:
 type: object
 ```
 
+8. Namespaces, ConfigMaps, Secrets, Resources (requested, limit), Replicas, Annotations, and Labels are configurable.
+
+The user can change the namespaces in which are required for the companion application. (SAP AI Core, Redis, Hana Cloud) User also can change the deployment namespace, ConfigMaps, Secrets, Resources (requested, limit), Replicas, Annotations, and Labels.
+
+[config/crd/bases/8-operator.kyma-project.io_companions.yaml](config/crd/bases/8-operator.kyma-project.io_companions.yaml)
+
+```yaml
+properties:
+  annotations:
+    additionalProperties:
+      type: string
+    description: Annotations allows to add annotations to NATS.
+    type: object
+  configMapNames:
+    description: Required ConfigMaps names
+    items:
+      type: string
+    type: array
+  deploymentNamespace:
+    default:
+      deploymentNamespace: ai-core
+    description: Namespace where the deployment will be created.
+    type: string
+  labels:
+    additionalProperties:
+      type: string
+    description: Labels allows to add Labels to NATS.
+    type: object
+  namespaces:
+    default:
+      namespaces:
+        - ai-core
+        - hana-cloud
+        - redis
+    description: |-
+      List of namespaces which are prerequisites for the Kyma companion manager.
+      Defaults:
+      - 'ai-core': Main namespace. Namespace for the SAP AI Core component.
+      - 'hana-cloud': Namespace for the SAP HANA Cloud vector instance.
+      - 'redis': Namespace for the Redis.
+    items:
+      type: string
+    type: array
+  replicas:
+    default:
+      replicas: 1
+    description: Replica count for the companion backend. Default value
+      is 1.
+    format: int32
+    type: integer
+  resources:
+    default:
+      resources:
+        limits:
+          cpu: "4"
+          memory: 4Gi
+        requests:
+          cpu: 500m
+          memory: 256Mi
+    description: |-
+      Specify required resources and resource limits for the companion backend.
+      Example:
+      resources:
+        limits:
+          cpu: 1
+          memory: 1Gi
+        requests:
+          cpu: 500m
+          memory: 256Mi
+    properties:
+      limits:
+        description: ResourceValues defines the CPU and Memory values
+          for the resources.
+        properties:
+          cpu:
+            type: string
+          memory:
+            type: string
+        required:
+          - cpu
+          - memory
+        type: object
+      requests:
+        description: ResourceValues defines the CPU and Memory values
+          for the resources.
+        properties:
+          cpu:
+            type: string
+          memory:
+            type: string
+        required:
+          - cpu
+          - memory
+        type: object
+    required:
+      - limits
+      - requests
+    type: object
+  secretNames:
+    description: Required Secrets names
+    items:
+      type: string
+    type: array
+required:
+  - configMapNames
+  - deploymentNamespace
+  - namespaces
+  - replicas
+  - resources
+  - secretNames
+type: object
+```
+
 ### Conclusion - Suggestion
 
-The best option is the 7th option. It provides the most flexibility for the user. The user can change the most important fields for the companion application, which ensures to be easy to deploy, easy to maintain, and automation support.
+The best option is the option 7 or 8. These provide the most flexibility for the user. The user can change the most important fields for the companion application, which ensures to be easy to deploy, easy to maintain, and automation support.
 
 Accordingly the user can change the following fields:
 
@@ -420,6 +534,8 @@ Accordingly the user can change the following fields:
 - Deployment namespace (in this case, the user can deploy the companion application in a different namespace)
 - ConfigMaps (check if the ConfigMaps are available)
 - Secrets (check if the Secrets are available)
+- Annotations (add annotations to the companion application) - in option 8
+- Labels (add labels to the companion application) - in option 8
 
 ### Other
 
