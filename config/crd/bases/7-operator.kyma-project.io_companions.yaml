@@ -44,15 +44,17 @@ spec:
                 items:
                   type: string
                 type: array
-              containerPort:
-                description: Container port for the companion backend. Default value
-                  is 5000.
-                format: int32
-                type: integer
               deploymentNamespace:
+                default:
+                  deploymentNamespace: ai-core
                 description: Namespace where the deployment will be created.
                 type: string
               namespaces:
+                default:
+                  namespaces:
+                  - ai-core
+                  - hana-cloud
+                  - redis
                 description: |-
                   List of namespaces which are prerequisites for the Kyma companion manager.
                   Defaults:
@@ -63,11 +65,20 @@ spec:
                   type: string
                 type: array
               replicas:
+                default:
+                  replicas: 1
                 description: Replica count for the companion backend. Default value
                   is 1.
                 format: int32
                 type: integer
               resources:
+                default:
+                  limits:
+                    cpu: "4"
+                    memory: 4Gi
+                  requests:
+                    cpu: 500m
+                    memory: 256Mi
                 description: |-
                   Specify required resources and resource limits for the companion backend.
                   Example:
@@ -114,7 +125,6 @@ spec:
                 type: array
             required:
             - configMapNames
-            - containerPort
             - deploymentNamespace
             - namespaces
             - replicas
