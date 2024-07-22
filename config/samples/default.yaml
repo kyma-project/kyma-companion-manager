@@ -18,11 +18,11 @@ spec:
   secretNames:
     - ai-core
     - ai-ghcr-login-secret
-  containerPort: 5000
+  replicas: 2
   resources:
     limits:
-      cpu: 1
-      memory: 1Gi
+      cpu: 4
+      memory: 4Gi
     requests:
       cpu: 500m
       memory: 256Mi

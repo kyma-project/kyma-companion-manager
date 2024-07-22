@@ -546,6 +546,41 @@ Accordingly the user can change the following fields:
 - Annotations (add annotations to the companion application) - in option 8
 - Labels (add labels to the companion application) - in option 8
 
+## Sample
+
+[config/samples/default.yaml](config/samples/default.yaml)
+
+```yaml
+apiVersion: operator.kyma-project.io/v1alpha1
+kind: Companion
+metadata:
+  labels:
+    app.kubernetes.io/name: default
+    app.kubernetes.io/component: kyma-companion-manager
+    app.kubernetes.io/part-of: kyma-companion-manager
+  name: default
+  namespace: kyma-system
+spec:
+  namespaces:
+    - redis
+    - hana-cloud
+    - ai-core
+  deploymentNamespace: ai-core
+  configMapNames:
+    - ai-backend-config
+  secretNames:
+    - ai-core
+    - ai-ghcr-login-secret
+  replicas: 2
+  resources:
+    limits:
+      cpu: 4
+      memory: 4Gi
+    requests:
+      cpu: 500m
+      memory: 256Mi
+```
+
 ## Other
 
 ### Default values
