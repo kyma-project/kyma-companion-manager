@@ -547,7 +547,7 @@ Accordingly the user can change the following fields:
 - Annotations (add annotations to the companion application) - in option 8
 - Labels (add labels to the companion application) - in option 8
 
-## Sample
+### Sample
 
 [config/samples/default.yaml](config/samples/default.yaml)
 
