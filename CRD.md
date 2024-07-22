@@ -5,6 +5,7 @@
 - [Companion Manager CR](#companion-manager-cr)
   - [Specification](#specification)
 - [Deployment steps](#deployment-steps)
+- [CRD Requirements](#crd-requirements)
 - [CRD Options](#crd-options)
   - [1. All fields are hardcoded in the CRD.](#1-all-fields-are-hardcoded-in-the-crd)
   - [2. Namespaces are configurable.](#2-namespaces-are-configurable)
@@ -44,6 +45,14 @@ The Companion Manager CR has the following fields:
 - `serviceAccountName`: The name of the service account to be used by the companion application.
 - `restartPolicy`: The restart policy for the companion application.
 
+## Deployment steps
+
+This is a very high level overview of the deployment steps. This is not a detailed deployment guide.
+
+![Deployment steps](docs/images/cr-deployment.drawio.png)
+
+## CRD Requirements
+
 From configuration perspective, not all fields are mandatory. The only mandatory fields depend on the following conditions:
 
 - Flexibility
@@ -53,11 +62,6 @@ From configuration perspective, not all fields are mandatory. The only mandatory
 
 From this reason we should define the best Custom Resource Definition (CRD) for the Companion Manager CR.
 
-## Deployment steps
-
-This is a very high level overview of the deployment steps. This is not a detailed deployment guide.
-
-![Deployment steps](docs/images/cr-deployment.drawio.png)
 
 ## CRD Options
 
