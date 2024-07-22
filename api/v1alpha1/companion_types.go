@@ -17,6 +17,7 @@ limitations under the License.
 package v1alpha1
 
 import (
+	kcorev1 "k8s.io/api/core/v1"
 	kmetav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -67,7 +68,14 @@ type CompanionSpec struct {
 	//     cpu: 500m
 	//     memory: 256Mi
 	// +kubebuilder:default:={resources:{limits:{cpu:"4",memory:"4Gi"},requests:{cpu:"500m",memory:"256Mi"}}}
-	Resources ResourceTypes `json:"resources"`
+	// +kubebuilder:default:={limits:{cpu:"4",memory:"4Gi"}, requests:{cpu:"500m",memory:"256Mi"}}
+	Resources kcorev1.ResourceRequirements `json:"resources,omitempty"`
+
+	// Annotations allows to add annotations to NATS.
+	Annotations map[string]string `json:"annotations,omitempty"`
+
+	// Labels allows to add Labels to NATS.
+	Labels map[string]string `json:"labels,omitempty"`
 }
 
 // CompanionStatus defines the observed state of Companion.
@@ -92,18 +100,6 @@ type CompanionStatus struct {
 	// - `Error` if an error occurred while reconciling the Companion custom resource.
 	// - `Deleting` if the resources managed by the Kyma companion manager are being deleted.
 	State string `json:"state"`
-}
-
-// ResourceRequirements defines the CPU and Memory requirements for the resources.
-type ResourceTypes struct {
-	Limits   ResourceList `json:"limits"`
-	Requests ResourceList `json:"requests"`
-}
-
-// ResourceValues defines the CPU and Memory values for the resources.
-type ResourceList struct {
-	CPU    string `json:"cpu"`
-	Memory string `json:"memory"`
 }
 
 // +kubebuilder:object:root=true
