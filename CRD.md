@@ -4,19 +4,20 @@
 
 - [Companion Manager CR](#companion-manager-cr)
   - [Specification](#specification)
-  - [Options](#options)
-    - [1. All fields are hardcoded in the CRD.](#1-all-fields-are-hardcoded-in-the-crd)
-    - [2. Namespaces are configurable.](#2-namespaces-are-configurable)
-    - [3. Namespaces, ConfigMaps, and Secrets are configurable.](#3-namespaces-configmaps-and-secrets-are-configurable)
-    - [4. Namespaces, ConfigMaps, Secrets and ContainerPort are configurable.](#4-namespaces-configmaps-secrets-and-containerport-are-configurable)
-    - [5. Namespaces, ConfigMaps, Secrets, ContainerPort, and Resources (requested, limit) are configurable.](#5-namespaces-configmaps-secrets-containerport-and-resources-requested-limit-are-configurable)
-    - [6. Namespaces, ConfigMaps, Secrets, ContainerPort, Resources (requested, limit), and Replicas are configurable.](#6-namespaces-configmaps-secrets-containerport-resources-requested-limit-and-replicas-are-configurable)
-    - [7. Namespaces, ConfigMaps, Secrets, Resources (requested, limit), and Replicas are configurable.](#7-namespaces-configmaps-secrets-resources-requested-limit-and-replicas-are-configurable)
-    - [8. Namespaces, ConfigMaps, Secrets, Resources (requested, limit), Replicas, Annotations, and Labels are configurable.](#8-namespaces-configmaps-secrets-resources-requested-limit-replicas-annotations-and-labels-are-configurable)
-  - [Conclusion - Suggestion](#conclusion---suggestion)
-  - [Other](#other)
-    - [Default values](#default-values)
-    - [Status.state](#statusstate)
+- [Deployment steps](#deployment-steps)
+- [CRD Options](#crd-options)
+  - [1. All fields are hardcoded in the CRD.](#1-all-fields-are-hardcoded-in-the-crd)
+  - [2. Namespaces are configurable.](#2-namespaces-are-configurable)
+  - [3. Namespaces, ConfigMaps, and Secrets are configurable.](#3-namespaces-configmaps-and-secrets-are-configurable)
+  - [4. Namespaces, ConfigMaps, Secrets and ContainerPort are configurable.](#4-namespaces-configmaps-secrets-and-containerport-are-configurable)
+  - [5. Namespaces, ConfigMaps, Secrets, ContainerPort, and Resources (requested, limit) are configurable.](#5-namespaces-configmaps-secrets-containerport-and-resources-requested-limit-are-configurable)
+  - [6. Namespaces, ConfigMaps, Secrets, ContainerPort, Resources (requested, limit), and Replicas are configurable.](#6-namespaces-configmaps-secrets-containerport-resources-requested-limit-and-replicas-are-configurable)
+  - [7. Namespaces, ConfigMaps, Secrets, Resources (requested, limit), and Replicas are configurable.](#7-namespaces-configmaps-secrets-resources-requested-limit-and-replicas-are-configurable)
+  - [8. Namespaces, ConfigMaps, Secrets, Resources (requested, limit), Replicas, Annotations, and Labels are configurable.](#8-namespaces-configmaps-secrets-resources-requested-limit-replicas-annotations-and-labels-are-configurable)
+- [Conclusion - Suggestion](#conclusion---suggestion)
+- [Other](#other)
+  - [Default values](#default-values)
+  - [Status.state](#statusstate)
 
 ## Companion Manager CR
 
@@ -51,9 +52,13 @@ From configuration perspective, not all fields are mandatory. The only mandatory
 
 From this reason we should define the best Custom Resource Definition (CRD) for the Companion Manager CR.
 
-### Options
+## Deployment steps
 
-#### 1. All fields are hardcoded in the CRD.
+![Deployment steps](docs/images/cr-deployment.drawio.png)
+
+## CRD Options
+
+### 1. All fields are hardcoded in the CRD.
 
 The user cannot change any field.
 
@@ -63,7 +68,7 @@ The user cannot change any field.
 properties:
 ```
 
-#### 2. Namespaces are configurable.
+### 2. Namespaces are configurable.
 
 The user can change the namespaces in which are required for the companion application. (SAP AI Core, Redis, Hana Cloud) User also can change the deployment namespace.
 
@@ -83,7 +88,7 @@ required:
 type: object
 ```
 
-#### 3. Namespaces, ConfigMaps, and Secrets are configurable.
+### 3. Namespaces, ConfigMaps, and Secrets are configurable.
 
 The user can change the namespaces in which are required for the companion application. (SAP AI Core, Redis, Hana Cloud) User also can change the deployment namespace, ConfigMaps, and Secrets.
 
@@ -113,7 +118,7 @@ required:
 type: object
 ```
 
-#### 4. Namespaces, ConfigMaps, Secrets and ContainerPort are configurable.
+### 4. Namespaces, ConfigMaps, Secrets and ContainerPort are configurable.
 
 The user can change the namespaces in which are required for the companion application. (SAP AI Core, Redis, Hana Cloud) User also can change the deployment namespace, ConfigMaps, Secrets, and ContainerPort.
 
@@ -147,7 +152,7 @@ required:
 type: object
 ```
 
-#### 5. Namespaces, ConfigMaps, Secrets, ContainerPort, and Resources (requested, limit) are configurable.
+### 5. Namespaces, ConfigMaps, Secrets, ContainerPort, and Resources (requested, limit) are configurable.
 
 The user can change the namespaces in which are required for the companion application. (SAP AI Core, Redis, Hana Cloud) User also can change the deployment namespace, ConfigMaps, Secrets, ContainerPort, and Resources (requested, limit).
 
@@ -214,7 +219,7 @@ required:
 type: object
 ```
 
-#### 6. Namespaces, ConfigMaps, Secrets, ContainerPort, Resources (requested, limit), and Replicas are configurable.
+### 6. Namespaces, ConfigMaps, Secrets, ContainerPort, Resources (requested, limit), and Replicas are configurable.
 
 The user can change the namespaces in which are required for the companion application. (SAP AI Core, Redis, Hana Cloud) User also can change the deployment namespace, ConfigMaps, Secrets, ContainerPort, Resources (requested, limit), and Replicas.
 
@@ -306,7 +311,7 @@ required:
 type: object
 ```
 
-#### 7. Namespaces, ConfigMaps, Secrets, Resources (requested, limit), and Replicas are configurable.
+### 7. Namespaces, ConfigMaps, Secrets, Resources (requested, limit), and Replicas are configurable.
 
 The user can change the namespaces in which are required for the companion application. (SAP AI Core, Redis, Hana Cloud) User also can change the deployment namespace, ConfigMaps, Secrets, Resources (requested, limit), and Replicas.
 
@@ -409,7 +414,7 @@ required:
 type: object
 ```
 
-#### 8. Namespaces, ConfigMaps, Secrets, Resources (requested, limit), Replicas, Annotations, and Labels are configurable.
+### 8. Namespaces, ConfigMaps, Secrets, Resources (requested, limit), Replicas, Annotations, and Labels are configurable.
 
 The user can change the namespaces in which are required for the companion application. (SAP AI Core, Redis, Hana Cloud) User also can change the deployment namespace, ConfigMaps, Secrets, Resources (requested, limit), Replicas, Annotations, and Labels.
 
@@ -522,7 +527,7 @@ required:
 type: object
 ```
 
-### Conclusion - Suggestion
+## Conclusion - Suggestion
 
 The best option is the option 7 or 8. These provide the most flexibility for the user. The user can change the most important fields for the companion application, which ensures to be easy to deploy, easy to maintain, and automation support.
 
@@ -537,13 +542,13 @@ Accordingly the user can change the following fields:
 - Annotations (add annotations to the companion application) - in option 8
 - Labels (add labels to the companion application) - in option 8
 
-### Other
+## Other
 
-#### Default values
+### Default values
 
 In the final CRD, we should define the default values for the fields. The default values should be defined in the CRD.
 
-#### Status.state
+### Status.state
 
 Kyma modules should provide the `status.state`, because the Lifecycle Manager then updates the Kyma CR of the cluster based on the observed status changes in the module CR (similar to a native Kubernetes deployment tracking availability).
 
