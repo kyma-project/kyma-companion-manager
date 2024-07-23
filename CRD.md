@@ -15,6 +15,7 @@
   - [6. Namespaces, ConfigMaps, Secrets, ContainerPort, Resources (requested, limit), and Replicas are configurable.](#6-namespaces-configmaps-secrets-containerport-resources-requested-limit-and-replicas-are-configurable)
   - [7. Namespaces, ConfigMaps, Secrets, Resources (requested, limit), and Replicas are configurable.](#7-namespaces-configmaps-secrets-resources-requested-limit-and-replicas-are-configurable)
   - [8. Namespaces, ConfigMaps, Secrets, Resources (requested, limit), Replicas, Annotations, and Labels are configurable.](#8-namespaces-configmaps-secrets-resources-requested-limit-replicas-annotations-and-labels-are-configurable)
+  - [9. Parameters are grouped by type (Companion, Hana, Redis)](#9-parameters-are-grouped-by-type-companion-hana-redis)
 - [Conclusion - Suggestion for the CRD](#conclusion---suggestion-for-the-crd)
   - [Sample manifest](#sample-manifest)
 - [Other](#other)
@@ -61,7 +62,6 @@ From configuration perspective, not all fields are mandatory. The only mandatory
 - Automation support
 
 From this reason we should define the best Custom Resource Definition (CRD) for the Companion Manager CR.
-
 
 ## CRD Options
 
@@ -536,16 +536,167 @@ required:
 type: object
 ```
 
+### 9. Parameters are grouped by type (Companion, Hana, Redis)
+
+The user can change all important parameters for the companion application. The parameters are grouped by type (Companion, Hana, Redis).
+
+[config/crd/bases/9-operator.kyma-project.io_companions.yaml](config/crd/bases/9-operator.kyma-project.io_companions.yaml)
+
+```yaml
+properties:
+  annotations:
+    additionalProperties:
+      type: string
+    description: Annotations allows to add annotations to NATS.
+    type: object
+  companionConfig:
+    default:
+      configMapNames:
+        - companion-config
+      deploymentNamespace: ai-core
+      namespace: companion
+      replicas: 1
+      secretsNames:
+        - companion-secrets
+    description: Companion configuration.
+    properties:
+      configMapNames:
+        description: ConfigMap names for the companion backend.
+        items:
+          type: string
+        type: array
+      namespace:
+        default: ai-core
+        description: |-
+          Companion namespace where the companion backend will be deployed
+          and the related configMaps and secrets are already stored.
+        type: string
+      resources:
+        default:
+          limits:
+            cpu: "4"
+            memory: 4Gi
+          requests:
+            cpu: 500m
+            memory: 256Mi
+        description: |-
+          Specify required resources and resource limits for the companion backend.
+          Example:
+          resources:
+            limits:
+              cpu: 1
+              memory: 1Gi
+            requests:
+              cpu: 500m
+              memory: 256Mi
+        properties:
+          claims:
+            description: |-
+              Claims lists the names of resources, defined in spec.resourceClaims,
+              that are used by this container.
+
+
+              This is an alpha field and requires enabling the
+              DynamicResourceAllocation feature gate.
+
+
+              This field is immutable. It can only be set for containers.
+            items:
+              description: ResourceClaim references one entry in PodSpec.ResourceClaims.
+              properties:
+                name:
+                  description: |-
+                    Name must match the name of one entry in pod.spec.resourceClaims of
+                    the Pod where this field is used. It makes that resource available
+                    inside a container.
+                  type: string
+              required:
+                - name
+              type: object
+            type: array
+            x-kubernetes-list-map-keys:
+              - name
+            x-kubernetes-list-type: map
+          limits:
+            additionalProperties:
+              anyOf:
+                - type: integer
+                - type: string
+              pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+              x-kubernetes-int-or-string: true
+            description: |-
+              Limits describes the maximum amount of compute resources allowed.
+              More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+            type: object
+          requests:
+            additionalProperties:
+              anyOf:
+                - type: integer
+                - type: string
+              pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+              x-kubernetes-int-or-string: true
+            description: |-
+              Requests describes the minimum amount of compute resources required.
+              If Requests is omitted for a container, it defaults to Limits if that is explicitly specified,
+              otherwise to an implementation-defined value. Requests cannot exceed Limits.
+              More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+            type: object
+        type: object
+      secretsNames:
+        description: Secret names for the companion backend.
+        items:
+          type: string
+        type: array
+    required:
+      - configMapNames
+      - namespace
+      - secretsNames
+    type: object
+  hanaCloudConfig:
+    default:
+      namespace: hana-cloud
+    description: HANA Cloud configuration.
+    properties:
+      namespace:
+        default: hana-cloud
+        description: HANA Cloud namespace where the HANA Cloud is deployed.
+        type: string
+    required:
+      - namespace
+    type: object
+  labels:
+    additionalProperties:
+      type: string
+    description: Labels allows to add Labels to NATS.
+    type: object
+  redisConfig:
+    default:
+      namespace: redis
+    description: Redis configuration.
+    properties:
+      namespace:
+        default: redis
+        description: Redis namespace where the Redis is deployed.
+        type: string
+    required:
+      - namespace
+    type: object
+required:
+  - companionConfig
+  - hanaCloudConfig
+  - redisConfig
+type: object
+```
+
 ## Conclusion - Suggestion for the CRD
 
-The best option is the option 7 or 8. These provide the most flexibility for the user. The user can change the most important fields for the companion application, which ensures to be easy to deploy, easy to maintain, and automation support.
+The best option is the option 9. These provide the most flexibility for the user. The user can change the most important fields for the companion application, which ensures to be easy to deploy, easy to maintain, and automation support.
 
 Accordingly the user can change the following fields:
 
 - Resources (requested, limit. Accordingly the resource parameters can be changed depending on the load)
 - Replicas (According to the load or usage, the user can change the number of replicas)
 - Namespaces (check if the namespaces are available)
-- Deployment namespace (in this case, the user can deploy the companion application in a different namespace)
 - ConfigMaps (check if the ConfigMaps are available)
 - Secrets (check if the Secrets are available)
 - Annotations (add annotations to the companion application) - in option 8
@@ -566,24 +717,27 @@ metadata:
   name: default
   namespace: kyma-system
 spec:
-  namespaces:
-    - redis
-    - hana-cloud
-    - ai-core
-  deploymentNamespace: ai-core
-  configMapNames:
-    - ai-backend-config
-  secretNames:
-    - ai-core
-    - ai-ghcr-login-secret
-  replicas: 2
-  resources:
-    limits:
-      cpu: 4
-      memory: 4Gi
-    requests:
-      cpu: 500m
-      memory: 256Mi
+  labels: {}
+  annotations: {}
+  companionConfig:
+    namespace: ai-core
+    configMapNames:
+      - ai-backend-config
+    secretNames:
+      - ai-core
+      - ai-ghcr-login-secret
+    replicas: 2
+    resources:
+      limits:
+        cpu: 4
+        memory: 4Gi
+      requests:
+        cpu: 500m
+        memory: 256Mi
+  hanaCloudConfig:
+    namespace: hana-cloud
+  redisConfig:
+    namespace: redis
 ```
 
 ## Other

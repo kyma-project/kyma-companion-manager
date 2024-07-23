@@ -33,30 +33,39 @@ const (
 
 // CompanionSpec defines the desired state of Companion.
 type CompanionSpec struct {
-	// List of namespaces which are prerequisites for the Kyma companion manager.
-	// Defaults:
-	// - 'ai-core': Main namespace. Namespace for the SAP AI Core component.
-	// - 'hana-cloud': Namespace for the SAP HANA Cloud vector instance.
-	// - 'redis': Namespace for the Redis.
-	// +kubebuilder:default:={namespaces:{"ai-core","hana-cloud","redis"}}
-	Namespaces []string `json:"namespaces"`
 
-	// Namespace where the deployment will be created.
-	// +kubebuilder:default:={deploymentNamespace:"ai-core"}
-	DeploymentNamespace string `json:"deploymentNamespace"`
+	// Companion configuration.
+	// +kubebuilder:default:={namespace:"companion",deploymentNamespace:"ai-core",configMapNames:{"companion-config"},secretsNames:{"companion-secrets"},replicas:1}
+	CompanionConfig CompanionConfig `json:"companionConfig"`
 
-	// Required ConfigMaps names
-	ConfigMapNames []string `json:"configMapNames"`
+	// HANA Cloud configuration.
+	// +kubebuilder:default:={namespace:"hana-cloud"}
+	HanaCloudConfig HanaCloudConfig `json:"hanaCloudConfig"`
 
-	// Required Secrets names
-	SecretsNames []string `json:"secretNames"`
-
-	// Replica count for the companion backend. Default value is 1.
-	// +kubebuilder:default:={replicas:1}
-	Replicas int32 `json:"replicas"`
+	// Redis configuration.
+	// +kubebuilder:default:={namespace:"redis"}
+	RedisConfig RedisConfig `json:"redisConfig"`
 
 	// Container port for the companion backend. Default value is 5000.
 	// ContainerPort int32 `json:"containerPort"`
+
+	// Annotations allows to add annotations to NATS.
+	Annotations map[string]string `json:"annotations,omitempty"`
+
+	// Labels allows to add Labels to NATS.
+	Labels map[string]string `json:"labels,omitempty"`
+}
+
+// CompanionConfig defines the configuration for the Companion.
+type CompanionConfig struct {
+	// Companion namespace where the companion backend will be deployed
+	// and the related configMaps and secrets are already stored.
+	// +kubebuilder:default:="ai-core"
+	Namespace string `json:"namespace"`
+	// ConfigMap names for the companion backend.
+	ConfigMapNames []string `json:"configMapNames"`
+	// Secret names for the companion backend.
+	SecretsNames []string `json:"secretsNames"`
 
 	// Specify required resources and resource limits for the companion backend.
 	// Example:
@@ -70,12 +79,20 @@ type CompanionSpec struct {
 	// +kubebuilder:default:={resources:{limits:{cpu:"4",memory:"4Gi"},requests:{cpu:"500m",memory:"256Mi"}}}
 	// +kubebuilder:default:={limits:{cpu:"4",memory:"4Gi"}, requests:{cpu:"500m",memory:"256Mi"}}
 	Resources kcorev1.ResourceRequirements `json:"resources,omitempty"`
+}
 
-	// Annotations allows to add annotations to NATS.
-	Annotations map[string]string `json:"annotations,omitempty"`
+// hanaCloudConfig defines the configuration for the HANA Cloud.
+type HanaCloudConfig struct {
+	// HANA Cloud namespace where the HANA Cloud is deployed.
+	// +kubebuilder:default:="hana-cloud"
+	Namespace string `json:"namespace"`
+}
 
-	// Labels allows to add Labels to NATS.
-	Labels map[string]string `json:"labels,omitempty"`
+// redisConfig defines the configuration for the Redis.
+type RedisConfig struct {
+	// Redis namespace where the Redis is deployed.
+	// +kubebuilder:default:="redis"
+	Namespace string `json:"namespace"`
 }
 
 // CompanionStatus defines the observed state of Companion.

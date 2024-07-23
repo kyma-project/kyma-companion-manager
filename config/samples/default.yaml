@@ -8,22 +8,24 @@ metadata:
   name: default
   namespace: kyma-system
 spec:
-  namespaces:
-    - redis
-    - hana-cloud
-    - ai-core
-  deploymentNamespace: ai-core
-  configMapNames:
-    - ai-backend-config
-  secretNames:
-    - ai-core
-    - ai-ghcr-login-secret
-  replicas: 2
-  resources:
-    limits:
-      cpu: 4
-      memory: 4Gi
-    requests:
-      cpu: 500m
-      memory: 256Mi
-
+  labels: {}
+  annotations: {}
+  companionConfig:
+    namespace: ai-core
+    configMapNames:
+      - ai-backend-config
+    secretNames:
+      - ai-core
+      - ai-ghcr-login-secret
+    replicas: 2
+    resources:
+      limits:
+        cpu: 4
+        memory: 4Gi
+      requests:
+        cpu: 500m
+        memory: 256Mi
+  hanaCloudConfig:
+    namespace: hana-cloud
+  redisConfig:
+    namespace: redis
