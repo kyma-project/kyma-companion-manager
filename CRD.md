@@ -147,10 +147,10 @@ metadata:
   name: default
   namespace: kyma-system
 spec:
-  aicoreSecret: ai-core/aicore
-  companionSecret: companion/aicore
-  hanaCloudSecret: companion/hana-cloud
-  redisSecret: companion/redis
+  aicoreSecret: name/namespace
+  companionSecret: name/namespace
+  hanaCloudSecret: name/namespace
+  redisSecret: name/namespace
   companion:
     replicas:
       min: 1
@@ -187,13 +187,13 @@ metadata:
   namespace: kyma-system
 spec:
   aicore:
-    secret: ai-core/aicore
+    secret: name/namespace
   hanaCloud:
-    secret: companion/hana-cloud
+    secret: name/namespace
   redis:
-    secret: companion/redis
+    secret: name/namespace
   companion:
-    secret: companion/aicore
+    secret: name/namespace
     replicas:
       min: 1
       max: 3
@@ -210,7 +210,6 @@ spec:
 
 The best option is the option 10-11. These provide the most flexibility for the user. The user can change the most important fields for the companion application, which ensures to be easy to deploy, easy to maintain, and automation support.
 
-
 ### Sample manifest 1
 
 [config/samples/default.yaml](config/samples/default-01.yaml)
@@ -226,10 +225,10 @@ metadata:
   name: default
   namespace: kyma-system
 spec:
-  aicoreSecret: ai-core/aicore
-  companionSecret: companion/aicore
-  hanaCloudSecret: companion/hana-cloud
-  redisSecret: companion/redis
+  aicoreSecret: name/namespace
+  companionSecret: name/namespace
+  hanaCloudSecret: name/namespace
+  redisSecret: name/namespace
   companion:
     replicas:
       min: 1
@@ -259,13 +258,13 @@ metadata:
   namespace: kyma-system
 spec:
   aicore:
-    secret: ai-core/aicore
+    secret: name/namespace
   hanaCloud:
-    secret: companion/hana-cloud
+    secret: name/namespace
   redis:
-    secret: companion/redis
+    secret: name/namespace
   companion:
-    secret: companion/aicore
+    secret: name/namespace
     replicas:
       min: 1
       max: 3
