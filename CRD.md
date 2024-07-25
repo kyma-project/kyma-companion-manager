@@ -147,7 +147,7 @@ metadata:
   name: default
   namespace: kyma-system
 spec:
-  aiCoreSecret: ai-core/aicore
+  aicoreSecret: ai-core/aicore
   companionSecret: companion/aicore
   hanaCloudSecret: companion/hana-cloud
   redisSecret: companion/redis
@@ -186,7 +186,7 @@ metadata:
   name: default
   namespace: kyma-system
 spec:
-  aiCore:
+  aicore:
     secret: ai-core/aicore
   hanaCloud:
     secret: companion/hana-cloud
@@ -226,7 +226,7 @@ metadata:
   name: default
   namespace: kyma-system
 spec:
-  aiCoreSecret: ai-core/aicore
+  aicoreSecret: ai-core/aicore
   companionSecret: companion/aicore
   hanaCloudSecret: companion/hana-cloud
   redisSecret: companion/redis
@@ -258,7 +258,7 @@ metadata:
   name: default
   namespace: kyma-system
 spec:
-  aiCore:
+  aicore:
     secret: ai-core/aicore
   hanaCloud:
     secret: companion/hana-cloud

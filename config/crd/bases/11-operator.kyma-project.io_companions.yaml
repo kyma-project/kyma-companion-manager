@@ -39,9 +39,9 @@ spec:
           spec:
             description: CompanionSpec defines the desired state of Companion.
             properties:
-              aiCore:
+              aicore:
                 default:
-                  aiCoreSecret:
+                  aicore:
                     secret: ai-core/aicore
                 description: AI Core configuration
                 properties:
@@ -179,7 +179,7 @@ spec:
                 type: object
               redis:
                 default:
-                  hanaCloud:
+                  redis:
                     secret: companion/redis
                 description: Redis configuration
                 properties:
@@ -192,7 +192,7 @@ spec:
                 - secret
                 type: object
             required:
-            - aiCore
+            - aicore
             - companion
             - hanaCloud
             - redis

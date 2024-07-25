@@ -8,7 +8,7 @@ metadata:
   name: default
   namespace: kyma-system
 spec:
-  aiCore: 
+  aicore: 
     secret: ai-core/aicore
   hanaCloud:
     secret: companion/hana-cloud

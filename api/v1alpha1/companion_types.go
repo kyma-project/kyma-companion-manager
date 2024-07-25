@@ -35,15 +35,15 @@ const (
 type CompanionSpec struct {
 
 	// AI Core configuration
-	// +kubebuilder:default:={aiCoreSecret:{secret: "ai-core/aicore"}}
-	AICore AICoreConfig `json:"aiCore"`
+	// +kubebuilder:default:={aicore:{secret: "ai-core/aicore"}}
+	AICore AICoreConfig `json:"aicore"`
 
 	// HANA Cloud configuration
 	// +kubebuilder:default:={hanaCloud:{secret: "companion/hana-cloud"}}
 	HanaCloud HanaConfig `json:"hanaCloud"`
 
 	// Redis configuration
-	// +kubebuilder:default:={hanaCloud:{secret: "companion/redis"}}
+	// +kubebuilder:default:={redis:{secret: "companion/redis"}}
 	Redis RedisConfig `json:"redis"`
 
 	// Companion configuration.
