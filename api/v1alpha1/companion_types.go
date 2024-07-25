@@ -34,38 +34,52 @@ const (
 // CompanionSpec defines the desired state of Companion.
 type CompanionSpec struct {
 
+	// AI Core configuration
+	// +kubebuilder:default:={aiCoreSecret:{secret: "ai-core/aicore"}}
+	AICore AICoreConfig `json:"aiCore"`
+
+	// HANA Cloud configuration
+	// +kubebuilder:default:={hanaCloud:{secret: "companion/hana-cloud"}}
+	HanaCloud HanaConfig `json:"hanaCloud"`
+
+	// Redis configuration
+	// +kubebuilder:default:={hanaCloud:{secret: "companion/redis"}}
+	Redis RedisConfig `json:"redis"`
+
 	// Companion configuration.
-	// +kubebuilder:default:={namespace:"companion",deploymentNamespace:"ai-core",configMapNames:{"companion-config"},secretsNames:{"companion-secrets"},replicas:1}
-	CompanionConfig CompanionConfig `json:"companionConfig"`
+	// +kubebuilder:default:={replicas:{min:1, max:3}, resources:{limits:{cpu:"4",memory:"4Gi"}, requests:{cpu:"500m",memory:"256Mi"}}}
+	Companion CompanionConfig `json:"companion"`
+}
 
-	// HANA Cloud configuration.
-	// +kubebuilder:default:={namespace:"hana-cloud"}
-	HanaCloudConfig HanaCloudConfig `json:"hanaCloudConfig"`
+// AICoreConfig defines the configuration for the AI Core.
+type AICoreConfig struct {
+	// Secret name and namespace for the AI Core.
+	// +kubebuilder:default:={secret:"ai-core/aicore"}
+	Secret string `json:"secret"`
+}
 
-	// Redis configuration.
-	// +kubebuilder:default:={namespace:"redis"}
-	RedisConfig RedisConfig `json:"redisConfig"`
+// HanaConfig defines the configuration for the Hana Cloud.
+type HanaConfig struct {
+	// Secret name and namespace for the Han Cloud.
+	// +kubebuilder:default:={secret:"companion/hana-cloud"}
+	Secret string `json:"secret"`
+}
 
-	// Container port for the companion backend. Default value is 5000.
-	// ContainerPort int32 `json:"containerPort"`
-
-	// Annotations allows to add annotations to NATS.
-	Annotations map[string]string `json:"annotations,omitempty"`
-
-	// Labels allows to add Labels to NATS.
-	Labels map[string]string `json:"labels,omitempty"`
+// RedisConfig defines the configuration for the Redis.
+type RedisConfig struct {
+	// Secret name and namespace for the Redis.
+	// +kubebuilder:default:={secret:"comanion/redis"}
+	Secret string `json:"secret"`
 }
 
 // CompanionConfig defines the configuration for the Companion.
 type CompanionConfig struct {
-	// Companion namespace where the companion backend will be deployed
-	// and the related configMaps and secrets are already stored.
-	// +kubebuilder:default:="ai-core"
-	Namespace string `json:"namespace"`
-	// ConfigMap names for the companion backend.
-	ConfigMapNames []string `json:"configMapNames"`
-	// Secret names for the companion backend.
-	SecretsNames []string `json:"secretsNames"`
+	// Secret name and namespace for the companion backend.
+	// +kubebuilder:default:={secret:"companion/aicore"}
+	Secret string `json:"secret"`
+	// Number of replicas for the companion backend.
+	// +kubebuilder:default:={min:1, max:1}
+	Replicas ReplicasConfig `json:"replicas"`
 
 	// Specify required resources and resource limits for the companion backend.
 	// Example:
@@ -81,18 +95,13 @@ type CompanionConfig struct {
 	Resources kcorev1.ResourceRequirements `json:"resources,omitempty"`
 }
 
-// hanaCloudConfig defines the configuration for the HANA Cloud.
-type HanaCloudConfig struct {
-	// HANA Cloud namespace where the HANA Cloud is deployed.
-	// +kubebuilder:default:="hana-cloud"
-	Namespace string `json:"namespace"`
-}
+// ReplicasConfig defines the min and max replicas
+type ReplicasConfig struct {
+	// +kubebuilder:validation:Minimum=1
+	Min int `json:"min"`
 
-// redisConfig defines the configuration for the Redis.
-type RedisConfig struct {
-	// Redis namespace where the Redis is deployed.
-	// +kubebuilder:default:="redis"
-	Namespace string `json:"namespace"`
+	// +kubebuilder:validation:Minimum=1
+	Max int `json:"max"`
 }
 
 // CompanionStatus defines the observed state of Companion.

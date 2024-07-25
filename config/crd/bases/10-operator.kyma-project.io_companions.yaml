@@ -1,0 +1,229 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.15.0
+  name: companions.operator.kyma-project.io
+spec:
+  group: operator.kyma-project.io
+  names:
+    kind: Companion
+    listKind: CompanionList
+    plural: companions
+    singular: companion
+  scope: Namespaced
+  versions:
+  - name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: Companion is the Schema for the companions API.
+        properties:
+          apiVersion:
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+            type: string
+          kind:
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: CompanionSpec defines the desired state of Companion.
+            properties:
+              aiCoreSecret:
+                default:
+                  aiCoreSecret: ai-core/aicore
+                description: AI Core configuration with namespace and secret name.
+                type: string
+              companion:
+                default:
+                  replicas:
+                    max: 3
+                    min: 1
+                  resources:
+                    limits:
+                      cpu: "4"
+                      memory: 4Gi
+                    requests:
+                      cpu: 500m
+                      memory: 256Mi
+                description: Companion related replica and resource configuration.
+                properties:
+                  replicas:
+                    default:
+                      max: 1
+                      min: 1
+                    description: Number of replicas for the companion backend.
+                    properties:
+                      max:
+                        minimum: 1
+                        type: integer
+                      min:
+                        minimum: 1
+                        type: integer
+                    required:
+                    - max
+                    - min
+                    type: object
+                  resources:
+                    default:
+                      limits:
+                        cpu: "4"
+                        memory: 4Gi
+                      requests:
+                        cpu: 500m
+                        memory: 256Mi
+                    description: |-
+                      Specify required resources and resource limits for the companion backend.
+                      Example:
+                      resources:
+                        limits:
+                          cpu: 1
+                          memory: 1Gi
+                        requests:
+                          cpu: 500m
+                          memory: 256Mi
+                    properties:
+                      claims:
+                        description: |-
+                          Claims lists the names of resources, defined in spec.resourceClaims,
+                          that are used by this container.
+
+
+                          This is an alpha field and requires enabling the
+                          DynamicResourceAllocation feature gate.
+
+
+                          This field is immutable. It can only be set for containers.
+                        items:
+                          description: ResourceClaim references one entry in PodSpec.ResourceClaims.
+                          properties:
+                            name:
+                              description: |-
+                                Name must match the name of one entry in pod.spec.resourceClaims of
+                                the Pod where this field is used. It makes that resource available
+                                inside a container.
+                              type: string
+                          required:
+                          - name
+                          type: object
+                        type: array
+                        x-kubernetes-list-map-keys:
+                        - name
+                        x-kubernetes-list-type: map
+                      limits:
+                        additionalProperties:
+                          anyOf:
+                          - type: integer
+                          - type: string
+                          pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                          x-kubernetes-int-or-string: true
+                        description: |-
+                          Limits describes the maximum amount of compute resources allowed.
+                          More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+                        type: object
+                      requests:
+                        additionalProperties:
+                          anyOf:
+                          - type: integer
+                          - type: string
+                          pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                          x-kubernetes-int-or-string: true
+                        description: |-
+                          Requests describes the minimum amount of compute resources required.
+                          If Requests is omitted for a container, it defaults to Limits if that is explicitly specified,
+                          otherwise to an implementation-defined value. Requests cannot exceed Limits.
+                          More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+                        type: object
+                    type: object
+                required:
+                - replicas
+                type: object
+              companionSecret:
+                default:
+                  companionSecret: companion/aicore
+                description: Companion configuration with namespace and secret name.
+                type: string
+              hanaCloudSecret:
+                default:
+                  hanaCloudSecret: companion/hana-cloud
+                description: HANA Cloud configuration with namespace and secret name.
+                type: string
+              redisSecret:
+                default:
+                  redisSecret: companion/redis
+                description: Redis configuration with namespace and secret name.
+                type: string
+            required:
+            - aiCoreSecret
+            - companion
+            - companionSecret
+            - hanaCloudSecret
+            - redisSecret
+            type: object
+          status:
+            description: CompanionStatus defines the observed state of Companion.
+            properties:
+              configMapsData:
+                additionalProperties:
+                  additionalProperties:
+                    type: string
+                  type: object
+                description: 'ConfigMapsData: Map of ConfigMaps and their data. (optional)'
+                type: object
+              configMapsExists:
+                additionalProperties:
+                  type: boolean
+                description: 'ConfigMapsExists: Map of ConfigMaps and their existence
+                  status.'
+                type: object
+              namespacesExist:
+                additionalProperties:
+                  type: boolean
+                description: |-
+                  Result of prerequisites validation.
+                  NamespacesExist: Map of namespaces and their existence status.
+                type: object
+              secretsData:
+                additionalProperties:
+                  additionalProperties:
+                    format: byte
+                    type: string
+                  type: object
+                description: 'SecretsData: Map of Secrets and their data. (optional)'
+                type: object
+              secretsExists:
+                additionalProperties:
+                  type: boolean
+                description: 'SecretsExists: Map of Secrets and their existence status.'
+                type: object
+              state:
+                description: |-
+                  Defines the overall state of the Companion custom resource.<br/>
+                  - `Ready` when all the resources managed by the Kyma companion manager are deployed successfully and
+                  the companion backend is ready.<br/>
+                  - `Warning` if there is a user input misconfiguration.<br/>
+                  - `Processing` if the resources managed by the Kyma companion manager are being created or updated.<br/>
+                  - `Error` if an error occurred while reconciling the Companion custom resource.
+                  - `Deleting` if the resources managed by the Kyma companion manager are being deleted.
+                type: string
+            required:
+            - configMapsExists
+            - namespacesExist
+            - secretsExists
+            - state
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
