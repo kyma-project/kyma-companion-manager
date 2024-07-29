@@ -42,7 +42,6 @@ type SecretSpec struct {
 
 // CompanionSpec defines the desired state of Companion.
 type CompanionSpec struct {
-
 	// AI Core configuration
 	// +kubebuilder:default:={aicore:{secret: "ai-core/aicore"}}
 	AICore AICoreConfig `json:"aicore"`
@@ -55,8 +54,9 @@ type CompanionSpec struct {
 	// +kubebuilder:default:={redis:{secret: "companion/redis"}}
 	Redis RedisConfig `json:"redis"`
 
-	// Companion configuration.
-	// +kubebuilder:default:={replicas:{min:1, max:3}, resources:{limits:{cpu:"4",memory:"4Gi"}, requests:{cpu:"500m",memory:"256Mi"}}}
+	// CompanionConfig defines the configuration for the companion
+	//nolint:lll
+	// +kubebuilder:default:={"replicas": {"min": 1,"max": 3},"resources": {"limits": {"cpu": "4","memory": "4Gi"},"requests": {"cpu": "500m","memory": "256Mi"}}, "secret": {"name": "companion","namespace": "ai-core"}}
 	Companion CompanionConfig `json:"companion"`
 }
 
@@ -84,32 +84,21 @@ type RedisConfig struct {
 // CompanionConfig defines the configuration for the Companion.
 type CompanionConfig struct {
 	// Secret name and namespace for the companion backend.
-	// +kubebuilder:default:= {secret:{"name": "companion", "namespace": "ai-core"}}
 	Secret SecretSpec `json:"secret"`
+
 	// Number of replicas for the companion backend.
-	// +kubebuilder:default:={min:1, max:1}
 	Replicas ReplicasConfig `json:"replicas"`
 
 	// Specify required resources and resource limits for the companion backend.
-	// Example:
-	// resources:
-	//   limits:
-	//     cpu: 1
-	//     memory: 1Gi
-	//   requests:
-	//     cpu: 500m
-	//     memory: 256Mi
-	// +kubebuilder:default:={resources:{limits:{cpu:"4",memory:"4Gi"},requests:{cpu:"500m",memory:"256Mi"}}}
-	// +kubebuilder:default:={limits:{cpu:"4",memory:"4Gi"}, requests:{cpu:"500m",memory:"256Mi"}}
 	Resources kcorev1.ResourceRequirements `json:"resources,omitempty"`
 }
 
-// ReplicasConfig defines the min and max replicas
+// ReplicasConfig defines the min and max replicas.
 type ReplicasConfig struct {
-	// +kubebuilder:validation:Minimum=1
+	// Minimum number of replicas for the companion backend.
 	Min int `json:"min"`
 
-	// +kubebuilder:validation:Minimum=1
+	// Maximum number of replicas for the companion backend.
 	Max int `json:"max"`
 }
 

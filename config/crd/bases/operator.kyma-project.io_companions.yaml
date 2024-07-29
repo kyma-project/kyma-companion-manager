@@ -79,42 +79,29 @@ spec:
                     requests:
                       cpu: 500m
                       memory: 256Mi
-                description: Companion configuration.
+                  secret:
+                    name: companion
+                    namespace: ai-core
+                description: CompanionConfig defines the configuration for the companion
                 properties:
                   replicas:
-                    default:
-                      max: 1
-                      min: 1
                     description: Number of replicas for the companion backend.
                     properties:
                       max:
-                        minimum: 1
+                        description: Maximum number of replicas for the companion
+                          backend.
                         type: integer
                       min:
-                        minimum: 1
+                        description: Minimum number of replicas for the companion
+                          backend.
                         type: integer
                     required:
                     - max
                     - min
                     type: object
                   resources:
-                    default:
-                      limits:
-                        cpu: "4"
-                        memory: 4Gi
-                      requests:
-                        cpu: 500m
-                        memory: 256Mi
-                    description: |-
-                      Specify required resources and resource limits for the companion backend.
-                      Example:
-                      resources:
-                        limits:
-                          cpu: 1
-                          memory: 1Gi
-                        requests:
-                          cpu: 500m
-                          memory: 256Mi
+                    description: Specify required resources and resource limits for
+                      the companion backend.
                     properties:
                       claims:
                         description: |-
@@ -169,10 +156,6 @@ spec:
                         type: object
                     type: object
                   secret:
-                    default:
-                      secret:
-                        name: companion
-                        namespace: ai-core
                     description: Secret name and namespace for the companion backend.
                     properties:
                       name:

@@ -195,7 +195,7 @@ issues:
       text: has alias "" which is not part of config # Ignore false positives that emerged due to https://github.com/julz/importas/issues/15.
     - linters:
         - lll
-      source: "^// +kubebuilder: " # Exclude lll issues for long lines starting with kubebuilder marker prefix
+      source: "^// +kubebuilder:" # Exclude lll issues for long lines starting with kubebuilder marker prefix
   max-issues-per-linter: 0
   max-same-issues: 0
 output:
