@@ -19,8 +19,6 @@ package v1alpha1
 import (
 	kcorev1 "k8s.io/api/core/v1"
 	kmetav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-
-	"k8s.io/apimachinery/pkg/types"
 )
 
 const (
@@ -32,6 +30,15 @@ const (
 )
 
 // NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
+
+// SecretSpec defines the secret name and namespace.
+type SecretSpec struct {
+	// Secret name and namespace for the secret.
+	// Name: Name of the secret.
+	// Namespace: Namespace of the secret.
+	Name      string `json:"name"`
+	Namespace string `json:"namespace"`
+}
 
 // CompanionSpec defines the desired state of Companion.
 type CompanionSpec struct {
@@ -57,27 +64,27 @@ type CompanionSpec struct {
 type AICoreConfig struct {
 	// Secret name and namespace for the AI Core.
 	// +kubebuilder:default:= {secret:{"name": "aicore", "namespace": "ai-core"}}
-	Secret types.NamespacedName `json:"secret"`
+	Secret SecretSpec `json:"secret"`
 }
 
-// HanaConfig defines the configuration for the Hana Cloud.
+// HanaConfig defines the configuration for the HANA Cloud.
 type HanaConfig struct {
-	// Secret name and namespace for the Han Cloud.
+	// Secret name and namespace for the HANA Cloud.
 	// +kubebuilder:default:= {secret:{"name": "companion", "namespace": "hana-cloud"}}
-	Secret types.NamespacedName `json:"secret"`
+	Secret SecretSpec `json:"secret"`
 }
 
 // RedisConfig defines the configuration for the Redis.
 type RedisConfig struct {
 	// Secret name and namespace for the Redis.
 	// +kubebuilder:default:= {secret:{"name": "companion", "namespace": "redis"}}
-	Secret types.NamespacedName `json:"secret"`
+	Secret SecretSpec `json:"secret"`
 }
 
 // CompanionConfig defines the configuration for the Companion.
 type CompanionConfig struct {
 	// Secret name and namespace for the companion backend.
-	Secret types.NamespacedName `json:"secret"`
+	Secret SecretSpec `json:"secret"`
 
 	// Number of replicas for the companion backend.
 	Replicas ReplicasConfig `json:"replicas"`
