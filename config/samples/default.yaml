@@ -1,8 +1,11 @@
 apiVersion: operator.kyma-project.io/v1alpha1
 kind: Companion
 metadata:
-  name: companion-manager
-  namespace: kyma-system
+  name: default
+  labels:
+    app.kubernetes.io/name: default
+    app.kubernetes.io/component: kyma-companion-manager
+    app.kubernetes.io/part-of: kyma-companion-manager
 spec:
   aicore:
     secret:

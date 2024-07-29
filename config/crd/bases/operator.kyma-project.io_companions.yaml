@@ -51,18 +51,6 @@ spec:
                         name: aicore
                         namespace: ai-core
                     description: Secret name and namespace for the AI Core.
-                    properties:
-                      name:
-                        description: |-
-                          Secret name and namespace for the secret.
-                          Name: Name of the secret.
-                          Namespace: Namespace of the secret.
-                        type: string
-                      namespace:
-                        type: string
-                    required:
-                    - name
-                    - namespace
                     type: object
                 required:
                 - secret
@@ -157,18 +145,6 @@ spec:
                     type: object
                   secret:
                     description: Secret name and namespace for the companion backend.
-                    properties:
-                      name:
-                        description: |-
-                          Secret name and namespace for the secret.
-                          Name: Name of the secret.
-                          Namespace: Namespace of the secret.
-                        type: string
-                      namespace:
-                        type: string
-                    required:
-                    - name
-                    - namespace
                     type: object
                 required:
                 - replicas
@@ -186,18 +162,6 @@ spec:
                         name: companion
                         namespace: hana-cloud
                     description: Secret name and namespace for the Han Cloud.
-                    properties:
-                      name:
-                        description: |-
-                          Secret name and namespace for the secret.
-                          Name: Name of the secret.
-                          Namespace: Namespace of the secret.
-                        type: string
-                      namespace:
-                        type: string
-                    required:
-                    - name
-                    - namespace
                     type: object
                 required:
                 - secret
@@ -214,18 +178,6 @@ spec:
                         name: companion
                         namespace: redis
                     description: Secret name and namespace for the Redis.
-                    properties:
-                      name:
-                        description: |-
-                          Secret name and namespace for the secret.
-                          Name: Name of the secret.
-                          Namespace: Namespace of the secret.
-                        type: string
-                      namespace:
-                        type: string
-                    required:
-                    - name
-                    - namespace
                     type: object
                 required:
                 - secret
