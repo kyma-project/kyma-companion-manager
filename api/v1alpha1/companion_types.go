@@ -63,7 +63,7 @@ type CompanionSpec struct {
 // AICoreConfig defines the configuration for the AI Core.
 type AICoreConfig struct {
 	// Secret name and namespace for the AI Core.
-	// +kubebuilder:default:= {secret:{"name": "aicore", "namespace": "ai-core"}}
+	// +kubebuilder:default:= {secret:{name: "aicore", namespace: "ai-core"}}
 	Secret SecretSpec `json:"secret"`
 }
 
