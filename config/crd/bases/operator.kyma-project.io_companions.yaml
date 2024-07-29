@@ -42,7 +42,9 @@ spec:
               aicore:
                 default:
                   aicore:
-                    secret: ai-core/aicore
+                    secret:
+                      name: aicore
+                      namespace: ai-core
                 description: AI Core configuration
                 properties:
                   secret:
@@ -177,7 +179,9 @@ spec:
               hanaCloud:
                 default:
                   hanaCloud:
-                    secret: companion/hana-cloud
+                    secret:
+                      name: companion
+                      namespace: hana-cloud
                 description: HANA Cloud configuration
                 properties:
                   secret:
@@ -205,7 +209,9 @@ spec:
               redis:
                 default:
                   redis:
-                    secret: companion/redis
+                    secret:
+                      name: companion
+                      namespace: redis
                 description: Redis configuration
                 properties:
                   secret:
