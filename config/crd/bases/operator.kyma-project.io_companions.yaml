@@ -41,17 +41,15 @@ spec:
             properties:
               aicore:
                 default:
-                  aicore:
-                    secret:
-                      name: aicore
-                      namespace: ai-core
+                  secret:
+                    name: ai-core
+                    namespace: ai-core
                 description: AI Core configuration
                 properties:
                   secret:
                     default:
-                      secret:
-                        name: aicore
-                        namespace: ai-core
+                      name: ai-core
+                      namespace: ai-core
                     description: Secret name and namespace for the AI Core.
                     properties:
                       name:
@@ -87,6 +85,9 @@ spec:
                 description: CompanionConfig defines the configuration for the companion
                 properties:
                   replicas:
+                    default:
+                      max: 3
+                      min: 1
                     description: Number of replicas for the companion backend.
                     properties:
                       max:
@@ -102,6 +103,13 @@ spec:
                     - min
                     type: object
                   resources:
+                    default:
+                      limits:
+                        cpu: 4
+                        memory: 4Gi
+                      requests:
+                        cpu: 500m
+                        memory: 256Mi
                     description: Specify required resources and resource limits for
                       the companion backend.
                     properties:
@@ -158,6 +166,9 @@ spec:
                         type: object
                     type: object
                   secret:
+                    default:
+                      name: companion
+                      namespace: ai-core
                     description: Secret name and namespace for the companion backend.
                     properties:
                       name:
@@ -178,17 +189,15 @@ spec:
                 type: object
               hanaCloud:
                 default:
-                  hanaCloud:
-                    secret:
-                      name: companion
-                      namespace: hana-cloud
+                  secret:
+                    name: companion
+                    namespace: hana-cloud
                 description: HANA Cloud configuration
                 properties:
                   secret:
                     default:
-                      secret:
-                        name: companion
-                        namespace: hana-cloud
+                      name: companion
+                      namespace: hana-cloud
                     description: Secret name and namespace for the HANA Cloud.
                     properties:
                       name:
@@ -208,17 +217,15 @@ spec:
                 type: object
               redis:
                 default:
-                  redis:
-                    secret:
-                      name: companion
-                      namespace: redis
+                  secret:
+                    name: companion
+                    namespace: redis
                 description: Redis configuration
                 properties:
                   secret:
                     default:
-                      secret:
-                        name: companion
-                        namespace: redis
+                      name: companion
+                      namespace: redis
                     description: Secret name and namespace for the Redis.
                     properties:
                       name:

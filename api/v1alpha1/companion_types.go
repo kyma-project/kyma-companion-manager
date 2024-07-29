@@ -43,15 +43,15 @@ type SecretSpec struct {
 // CompanionSpec defines the desired state of Companion.
 type CompanionSpec struct {
 	// AI Core configuration
-	// +kubebuilder:default:={aicore:{secret: {name: "aicore", namespace: "ai-core"}}}
+	// +kubebuilder:default:={secret:{name: "ai-core", namespace: "ai-core"}}
 	AICore AICoreConfig `json:"aicore"`
 
 	// HANA Cloud configuration
-	// +kubebuilder:default:={hanaCloud:{secret: {name: "companion", namespace: "hana-cloud"}}}
+	// +kubebuilder:default:={secret:{name: "companion", namespace: "hana-cloud"}}
 	HanaCloud HanaConfig `json:"hanaCloud"`
 
 	// Redis configuration
-	// +kubebuilder:default:={redis:{secret: {name: "companion", namespace: "redis"}}}
+	// +kubebuilder:default:={secret:{name: "companion", namespace: "redis"}}
 	Redis RedisConfig `json:"redis"`
 
 	// CompanionConfig defines the configuration for the companion
@@ -63,33 +63,36 @@ type CompanionSpec struct {
 // AICoreConfig defines the configuration for the AI Core.
 type AICoreConfig struct {
 	// Secret name and namespace for the AI Core.
-	// +kubebuilder:default:= {secret:{name: "aicore", namespace: "ai-core"}}
+	// +kubebuilder:default:={name: "ai-core", namespace: "ai-core"}
 	Secret SecretSpec `json:"secret"`
 }
 
 // HanaConfig defines the configuration for the HANA Cloud.
 type HanaConfig struct {
 	// Secret name and namespace for the HANA Cloud.
-	// +kubebuilder:default:= {secret:{"name": "companion", "namespace": "hana-cloud"}}
+	// +kubebuilder:default:={name: "companion", namespace: "hana-cloud"}
 	Secret SecretSpec `json:"secret"`
 }
 
 // RedisConfig defines the configuration for the Redis.
 type RedisConfig struct {
 	// Secret name and namespace for the Redis.
-	// +kubebuilder:default:= {secret:{"name": "companion", "namespace": "redis"}}
+	// +kubebuilder:default:={name: "companion", namespace: "redis"}
 	Secret SecretSpec `json:"secret"`
 }
 
 // CompanionConfig defines the configuration for the Companion.
 type CompanionConfig struct {
 	// Secret name and namespace for the companion backend.
+	// +kubebuilder:default:={name: "companion", namespace: "ai-core"}
 	Secret SecretSpec `json:"secret"`
 
 	// Number of replicas for the companion backend.
+	// +kubebuilder:default:={min: 1, max: 3}
 	Replicas ReplicasConfig `json:"replicas"`
 
 	// Specify required resources and resource limits for the companion backend.
+	// +kubebuilder:default:={limits:{cpu:4,memory:"4Gi"}, requests:{cpu:"500m",memory:"256Mi"}}
 	Resources kcorev1.ResourceRequirements `json:"resources,omitempty"`
 }
 
