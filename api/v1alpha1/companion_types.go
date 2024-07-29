@@ -31,6 +31,15 @@ const (
 
 // NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
 
+// SecretSpec defines the secret name and namespace.
+type SecretSpec struct {
+	// Secret name and namespace for the secret.
+	// Name: Name of the secret.
+	// Namespace: Namespace of the secret.
+	Name      string `json:"name"`
+	Namespace string `json:"namespace"`
+}
+
 // CompanionSpec defines the desired state of Companion.
 type CompanionSpec struct {
 
@@ -54,29 +63,29 @@ type CompanionSpec struct {
 // AICoreConfig defines the configuration for the AI Core.
 type AICoreConfig struct {
 	// Secret name and namespace for the AI Core.
-	// +kubebuilder:default:={secret:"ai-core/aicore"}
-	Secret string `json:"secret"`
+	// +kubebuilder:default:= {secret:{"name": "aicore", "namespace": "ai-core"}}
+	Secret SecretSpec `json:"secret"`
 }
 
 // HanaConfig defines the configuration for the Hana Cloud.
 type HanaConfig struct {
 	// Secret name and namespace for the Han Cloud.
-	// +kubebuilder:default:={secret:"companion/hana-cloud"}
-	Secret string `json:"secret"`
+	// +kubebuilder:default:= {secret:{"name": "companion", "namespace": "hana-cloud"}}
+	Secret SecretSpec `json:"secret"`
 }
 
 // RedisConfig defines the configuration for the Redis.
 type RedisConfig struct {
 	// Secret name and namespace for the Redis.
-	// +kubebuilder:default:={secret:"comanion/redis"}
-	Secret string `json:"secret"`
+	// +kubebuilder:default:= {secret:{"name": "companion", "namespace": "redis"}}
+	Secret SecretSpec `json:"secret"`
 }
 
 // CompanionConfig defines the configuration for the Companion.
 type CompanionConfig struct {
 	// Secret name and namespace for the companion backend.
-	// +kubebuilder:default:={secret:"companion/aicore"}
-	Secret string `json:"secret"`
+	// +kubebuilder:default:= {secret:{"name": "companion", "namespace": "ai-core"}}
+	Secret SecretSpec `json:"secret"`
 	// Number of replicas for the companion backend.
 	// +kubebuilder:default:={min:1, max:1}
 	Replicas ReplicasConfig `json:"replicas"`
@@ -106,18 +115,6 @@ type ReplicasConfig struct {
 
 // CompanionStatus defines the observed state of Companion.
 type CompanionStatus struct {
-	// Result of prerequisites validation.
-	// NamespacesExist: Map of namespaces and their existence status.
-	NamespacesExist map[string]bool `json:"namespacesExist"`
-	// ConfigMapsExists: Map of ConfigMaps and their existence status.
-	ConfigMapsExists map[string]bool `json:"configMapsExists"`
-	// SecretsExists: Map of Secrets and their existence status.
-	SecretsExists map[string]bool `json:"secretsExists"`
-	// ConfigMapsData: Map of ConfigMaps and their data. (optional)
-	ConfigMapsData map[string]map[string]string `json:"configMapsData,omitempty"`
-	// SecretsData: Map of Secrets and their data. (optional)
-	SecretsData map[string]map[string][]byte `json:"secretsData,omitempty"`
-
 	// Defines the overall state of the Companion custom resource.<br/>
 	// - `Ready` when all the resources managed by the Kyma companion manager are deployed successfully and
 	// the companion backend is ready.<br/>

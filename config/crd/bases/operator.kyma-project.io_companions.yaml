@@ -39,33 +39,64 @@ spec:
           spec:
             description: CompanionSpec defines the desired state of Companion.
             properties:
-              annotations:
-                additionalProperties:
-                  type: string
-                description: Annotations allows to add annotations to NATS.
-                type: object
-              companionConfig:
+              aicore:
                 default:
-                  configMapNames:
-                  - companion-config
-                  deploymentNamespace: ai-core
-                  namespace: companion
-                  replicas: 1
-                  secretsNames:
-                  - companion-secrets
+                  aicore:
+                    secret: ai-core/aicore
+                description: AI Core configuration
+                properties:
+                  secret:
+                    default:
+                      secret:
+                        name: aicore
+                        namespace: ai-core
+                    description: Secret name and namespace for the AI Core.
+                    properties:
+                      name:
+                        description: |-
+                          Secret name and namespace for the secret.
+                          Name: Name of the secret.
+                          Namespace: Namespace of the secret.
+                        type: string
+                      namespace:
+                        type: string
+                    required:
+                    - name
+                    - namespace
+                    type: object
+                required:
+                - secret
+                type: object
+              companion:
+                default:
+                  replicas:
+                    max: 3
+                    min: 1
+                  resources:
+                    limits:
+                      cpu: "4"
+                      memory: 4Gi
+                    requests:
+                      cpu: 500m
+                      memory: 256Mi
                 description: Companion configuration.
                 properties:
-                  configMapNames:
-                    description: ConfigMap names for the companion backend.
-                    items:
-                      type: string
-                    type: array
-                  namespace:
-                    default: ai-core
-                    description: |-
-                      Companion namespace where the companion backend will be deployed
-                      and the related configMaps and secrets are already stored.
-                    type: string
+                  replicas:
+                    default:
+                      max: 1
+                      min: 1
+                    description: Number of replicas for the companion backend.
+                    properties:
+                      max:
+                        minimum: 1
+                        type: integer
+                      min:
+                        minimum: 1
+                        type: integer
+                    required:
+                    - max
+                    - min
+                    type: object
                   resources:
                     default:
                       limits:
@@ -137,86 +168,94 @@ spec:
                           More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
                         type: object
                     type: object
-                  secretsNames:
-                    description: Secret names for the companion backend.
-                    items:
-                      type: string
-                    type: array
+                  secret:
+                    default:
+                      secret:
+                        name: companion
+                        namespace: ai-core
+                    description: Secret name and namespace for the companion backend.
+                    properties:
+                      name:
+                        description: |-
+                          Secret name and namespace for the secret.
+                          Name: Name of the secret.
+                          Namespace: Namespace of the secret.
+                        type: string
+                      namespace:
+                        type: string
+                    required:
+                    - name
+                    - namespace
+                    type: object
                 required:
-                - configMapNames
-                - namespace
-                - secretsNames
+                - replicas
+                - secret
                 type: object
-              hanaCloudConfig:
+              hanaCloud:
                 default:
-                  namespace: hana-cloud
-                description: HANA Cloud configuration.
+                  hanaCloud:
+                    secret: companion/hana-cloud
+                description: HANA Cloud configuration
                 properties:
-                  namespace:
-                    default: hana-cloud
-                    description: HANA Cloud namespace where the HANA Cloud is deployed.
-                    type: string
+                  secret:
+                    default:
+                      secret:
+                        name: companion
+                        namespace: hana-cloud
+                    description: Secret name and namespace for the Han Cloud.
+                    properties:
+                      name:
+                        description: |-
+                          Secret name and namespace for the secret.
+                          Name: Name of the secret.
+                          Namespace: Namespace of the secret.
+                        type: string
+                      namespace:
+                        type: string
+                    required:
+                    - name
+                    - namespace
+                    type: object
                 required:
-                - namespace
+                - secret
                 type: object
-              labels:
-                additionalProperties:
-                  type: string
-                description: Labels allows to add Labels to NATS.
-                type: object
-              redisConfig:
+              redis:
                 default:
-                  namespace: redis
-                description: Redis configuration.
+                  redis:
+                    secret: companion/redis
+                description: Redis configuration
                 properties:
-                  namespace:
-                    default: redis
-                    description: Redis namespace where the Redis is deployed.
-                    type: string
+                  secret:
+                    default:
+                      secret:
+                        name: companion
+                        namespace: redis
+                    description: Secret name and namespace for the Redis.
+                    properties:
+                      name:
+                        description: |-
+                          Secret name and namespace for the secret.
+                          Name: Name of the secret.
+                          Namespace: Namespace of the secret.
+                        type: string
+                      namespace:
+                        type: string
+                    required:
+                    - name
+                    - namespace
+                    type: object
                 required:
-                - namespace
+                - secret
                 type: object
             required:
-            - companionConfig
-            - hanaCloudConfig
-            - redisConfig
+            - aicore
+            - companion
+            - hanaCloud
+            - redis
             type: object
           status:
             description: CompanionStatus defines the observed state of Companion.
             properties:
-              configMapsData:
-                additionalProperties:
-                  additionalProperties:
-                    type: string
-                  type: object
-                description: 'ConfigMapsData: Map of ConfigMaps and their data. (optional)'
-                type: object
-              configMapsExists:
-                additionalProperties:
-                  type: boolean
-                description: 'ConfigMapsExists: Map of ConfigMaps and their existence
-                  status.'
-                type: object
-              namespacesExist:
-                additionalProperties:
-                  type: boolean
-                description: |-
-                  Result of prerequisites validation.
-                  NamespacesExist: Map of namespaces and their existence status.
-                type: object
-              secretsData:
-                additionalProperties:
-                  additionalProperties:
-                    format: byte
-                    type: string
-                  type: object
-                description: 'SecretsData: Map of Secrets and their data. (optional)'
-                type: object
-              secretsExists:
-                additionalProperties:
-                  type: boolean
-                description: 'SecretsExists: Map of Secrets and their existence status.'
-                type: object
               state:
                 description: |-
                   Defines the overall state of the Companion custom resource.<br/>
@@ -228,9 +267,6 @@ spec:
                   - `Deleting` if the resources managed by the Kyma companion manager are being deleted.
                 type: string
             required:
-            - configMapsExists
-            - namespacesExist
-            - secretsExists
             - state
             type: object
         type: object
